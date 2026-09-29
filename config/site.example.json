@@ -1,0 +1,10 @@
+{
+ "note": "看板顶栏与平台集成（可选）。复制为 site.json。单机使用不需要这个文件。",
+ "brand": "直播间监控",
+ "org": "我的平台",
+ "logo": "/assets/logo.png",
+ "home": "https://example.com/",
+ "platform_base": "/app/",
+ "user_api": "/app/api",
+ "ask_api": "/app/api/live-monitor"
+}

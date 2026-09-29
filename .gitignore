@@ -1,0 +1,22 @@
+# 本机配置和密钥
+config/.env.local
+config/rooms.json
+config/hotwords.json
+config/anchors.json
+config/site.json
+config/bias_samples.json
+
+# 采集数据、模型、浏览器登录态
+data/
+out/
+logs/
+models/
+.profiles/
+site/
+
+__pycache__/
+*.pyc
+*.webm
+*.wav
+*.bak
+logs_dashboard.txt

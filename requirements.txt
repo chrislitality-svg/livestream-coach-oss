@@ -1,0 +1,10 @@
+# 必需
+playwright>=1.45        # 采集：打开直播页录音频、截图、抓弹幕。装完再跑 python -m playwright install chromium
+sherpa-onnx>=1.12       # 本地转写（FunASR-Nano / Qwen3-ASR）与标点
+numpy>=1.24
+openai>=1.30            # 模型层：任意 OpenAI 兼容接口（百炼 / DeepSeek / OpenAI / Ollama …）
+Pillow>=10.0            # 截图缩略图、演示数据
+
+# 可选（按 ASR_ENGINE 选装）
+# faster-whisper>=1.0   # ASR_ENGINE=local，建议有 NVIDIA 显卡
+# dashscope>=1.20       # ASR_ENGINE=aliyun

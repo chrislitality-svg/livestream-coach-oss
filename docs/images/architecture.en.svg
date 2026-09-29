@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+<style>
+  svg{--bg:#f7f8fb;--card:#ffffff;--ink:#0f172a;--ink2:#475569;--line:#94a3b8}
+  @media (prefers-color-scheme:dark){svg{--bg:#0f1320;--card:#171c2b;--ink:#e8ecf3;--ink2:#9aa4b5;--line:#64748b}}
+  text{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:var(--ink)}
+  .t{font-size:22px;font-weight:700}.h{font-size:17px;font-weight:700}.m{font-size:14px;fill:var(--ink2)}
+  .s{font-size:13px;fill:var(--ink2)}.d{font-size:13.5px;fill:var(--ink2)}
+  .ar{stroke:var(--line);stroke-width:2;fill:none}.dash{stroke-dasharray:6 5}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker></defs>
+<rect width="1200" height="560" rx="18" fill="var(--bg)"/>
+<text x="36" y="50" class="t">Livestream Coach · Data flow</text>
+<rect x="36" y="90" width="190" height="96" rx="14" fill="var(--card)" stroke="#64748b" stroke-width="1.5"/>
+<rect x="36" y="104" width="6" height="68" rx="3" fill="#64748b"/>
+<text x="56" y="120" class="h">Douyin live room</text>
+<text x="56" y="144" class="m">public live page</text>
+<rect x="266" y="90" width="250" height="96" rx="14" fill="var(--card)" stroke="#0ea5e9" stroke-width="1.5"/>
+<rect x="266" y="104" width="6" height="68" rx="3" fill="#0ea5e9"/>
+<text x="286" y="120" class="h">Capture</text>
+<text x="286" y="144" class="m">record.py · Playwright</text>
+<text x="286" y="165" class="s">audio / frames / chat / viewers</text>
+<rect x="556" y="90" width="270" height="96" rx="14" fill="var(--card)" stroke="#8b5cf6" stroke-width="1.5"/>
+<rect x="556" y="104" width="6" height="68" rx="3" fill="#8b5cf6"/>
+<text x="576" y="120" class="h">Transcribe</text>
+<text x="576" y="144" class="m">FunASR-Nano (CPU)</text>
+<text x="576" y="165" class="s">+ punctuation + homophone fixes</text>
+<rect x="866" y="90" width="300" height="96" rx="14" fill="var(--card)" stroke="#10b981" stroke-width="1.5"/>
+<rect x="866" y="104" width="6" height="68" rx="3" fill="#10b981"/>
+<text x="886" y="120" class="h">Rule layer · zero model cost</text>
+<text x="886" y="144" class="m">analyze · talk_metrics</text>
+<text x="886" y="165" class="s">talk structure / urge gaps / chat intent</text>
+<path d="M226 138 L262 138" class="ar" marker-end="url(#a)"/>
+<path d="M516 138 L552 138" class="ar" marker-end="url(#a)"/>
+<path d="M826 138 L862 138" class="ar" marker-end="url(#a)"/>
+<rect x="266" y="236" width="250" height="96" rx="14" fill="var(--card)" stroke="#f59e0b" stroke-width="1.5"/>
+<rect x="266" y="250" width="6" height="68" rx="3" fill="#f59e0b"/>
+<text x="286" y="266" class="h">Rubric</text>
+<text x="286" y="290" class="m">config/standard.md</text>
+<text x="286" y="311" class="s">human-approved, fed to every prompt</text>
+<rect x="866" y="236" width="300" height="96" rx="14" fill="var(--card)" stroke="#f97316" stroke-width="1.5"/>
+<rect x="866" y="250" width="6" height="68" rx="3" fill="#f97316"/>
+<text x="886" y="266" class="h">Model layer · optional</text>
+<text x="886" y="290" class="m">any OpenAI-compatible API</text>
+<text x="886" y="311" class="s">pitch logic / audience / on-screen</text>
+<path d="M1016 186 L1016 232" class="ar dash" marker-end="url(#a)"/>
+<path d="M516 322 L862 322" class="ar dash" marker-end="url(#a)"/>
+<rect x="556" y="382" width="610" height="96" rx="14" fill="var(--card)" stroke="#3f6bff" stroke-width="1.5"/>
+<rect x="556" y="396" width="6" height="68" rx="3" fill="#3f6bff"/>
+<text x="576" y="412" class="h">Outputs</text>
+<text x="576" y="436" class="m">dashboard.py · report.py</text>
+<text x="576" y="457" class="s">export_site (static site for any web server)</text>
+<path d="M1016 332 L1016 378" class="ar" marker-end="url(#a)"/>
+<path d="M866 170 L846 170 L846 378" class="ar" marker-end="url(#a)"/>
+<text x="36" y="524" class="d">Daemons: auto_record (records when live) · auto_analyze (analyzes when done, backfills model layer) · health_check</text>
+</svg>

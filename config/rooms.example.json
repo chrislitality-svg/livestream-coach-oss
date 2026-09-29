@@ -1,0 +1,21 @@
+{
+ "note": "直播间登记表。group=own 是我方，group=benchmark 是标杆库。品类必须填对——基线按品类分池，跨品类不能混算。复制为 rooms.json 后填写；房间号是 live.douyin.com/<房间号> 里那串数字。",
+ "pair": [
+  "<我方房间ID>",
+  "<对标房间ID>"
+ ],
+ "rooms": {
+  "<我方房间ID>": {
+   "name": "我方直播间",
+   "group": "own",
+   "category": "智能投影",
+   "url": "https://live.douyin.com/<我方房间ID>"
+  },
+  "<对标房间ID>": {
+   "name": "对标直播间",
+   "group": "benchmark",
+   "category": "智能投影",
+   "url": "https://live.douyin.com/<对标房间ID>"
+  }
+ }
+}

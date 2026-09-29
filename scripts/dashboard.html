@@ -1,0 +1,2334 @@
+<!doctype html>
+<html lang=zh-CN>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name=color-scheme content="light dark">
+<title>直播话术分析平台</title>
+<style>
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('/hb/assets/fonts/DMSans.woff2') format('woff2')}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+
+:root{
+  color-scheme:light;
+  --bg:#f5f6f9;--pnl:#ffffff;--pnl2:#f4f6f9;--pnl3:#e9edf3;--glass:rgba(255,255,255,.78);
+  --fg:#0b1220;--fg2:#334155;--dim:#64748b;--dim2:#94a3b8;
+  --line:#e6eaf0;--line2:#d4dbe5;
+  --acc:#3f6bff;--acc2:#7c5cff;--acc-soft:#eef2ff;--acc-ink:#2a4fd6;
+  --ok:#059669;--ok-soft:#e6f6ef;--warn:#b45309;--warn-soft:#fdf1dc;
+  --bad:#dc2626;--bad-soft:#fdecec;--pur:#7c3aed;--pur-soft:#f1ebfe;
+  --c-p:#3f6bff;--c-s:#f59e0b;--c-i:#10b981;--c-r:#ef4444;--c-o:#cbd5e1;
+  --r-xs:6px;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:22px;--r-pill:999px;
+  --sh-xs:0 1px 2px rgba(15,23,42,.05);
+  --sh-sm:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04);
+  --sh-md:0 12px 32px -10px rgba(15,23,42,.16),0 4px 10px -4px rgba(15,23,42,.06);
+  --sh-lg:0 30px 80px -20px rgba(15,23,42,.35),0 10px 24px -8px rgba(15,23,42,.12);
+  --glow:0 10px 30px -10px rgba(63,107,255,.55);
+  --mono:'JetBrains Mono','SF Mono',ui-monospace,Consolas,monospace;
+  --sans:'DM Sans',-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --side-w:232px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  color-scheme:dark;
+  --bg:#0a0c11;--pnl:#12161e;--pnl2:#171c26;--pnl3:#202733;--glass:rgba(18,22,30,.78);
+  --fg:#e9edf4;--fg2:#c3ccda;--dim:#8a93a5;--dim2:#5f6879;
+  --line:#222a36;--line2:#2f3947;
+  --acc:#5b8bff;--acc2:#9b82ff;--acc-soft:#16213b;--acc-ink:#8fb0ff;
+  --ok:#2fcf94;--ok-soft:#0f2a1f;--warn:#f0aa46;--warn-soft:#2c2112;
+  --bad:#ff6b6b;--bad-soft:#2e1618;--pur:#a98bff;--pur-soft:#221a3a;
+  --c-p:#6b8dff;--c-s:#fbbf24;--c-i:#34d399;--c-r:#f87171;--c-o:#3a4453;
+  --sh-xs:0 1px 2px rgba(0,0,0,.4);--sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 12px 32px -10px rgba(0,0,0,.7);--sh-lg:0 30px 80px -20px rgba(0,0,0,.8);
+}}
+:root[data-theme=dark]{
+  color-scheme:dark;
+  --bg:#0a0c11;--pnl:#12161e;--pnl2:#171c26;--pnl3:#202733;--glass:rgba(18,22,30,.78);
+  --fg:#e9edf4;--fg2:#c3ccda;--dim:#8a93a5;--dim2:#5f6879;
+  --line:#222a36;--line2:#2f3947;
+  --acc:#5b8bff;--acc2:#9b82ff;--acc-soft:#16213b;--acc-ink:#8fb0ff;
+  --ok:#2fcf94;--ok-soft:#0f2a1f;--warn:#f0aa46;--warn-soft:#2c2112;
+  --bad:#ff6b6b;--bad-soft:#2e1618;--pur:#a98bff;--pur-soft:#221a3a;
+  --c-p:#6b8dff;--c-s:#fbbf24;--c-i:#34d399;--c-r:#f87171;--c-o:#3a4453;
+  --sh-xs:0 1px 2px rgba(0,0,0,.4);--sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 12px 32px -10px rgba(0,0,0,.7);--sh-lg:0 30px 80px -20px rgba(0,0,0,.8);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow:hidden;
+  font-feature-settings:'tnum' 1,'cv11' 1}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;letter-spacing:-.02em;font-weight:650}
+::selection{background:color-mix(in srgb,var(--acc) 26%,transparent)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.mono{font-family:var(--mono)}
+.muted{color:var(--dim)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+*{scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:10px;border:3px solid transparent;background-clip:content-box}
+
+.shell{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);height:calc(100dvh - 52px);
+  transition:grid-template-columns .28s var(--ease)}
+.shell.mini{--side-w:68px}
+.side{position:relative;z-index:30;display:flex;flex-direction:column;gap:6px;min-width:0;
+  background:var(--pnl);border-right:1px solid var(--line);padding:14px 12px;overflow:hidden}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 6px 14px;white-space:nowrap}
+.logo{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;
+  background:conic-gradient(from var(--ang),#3f6bff,#7c5cff,#22c1ee,#3f6bff);
+  animation:spin 8s linear infinite;box-shadow:var(--glow);position:relative}
+.logo::after{content:'';position:absolute;inset:2px;border-radius:9px;background:linear-gradient(160deg,#3f6bff,#5a4cf0)}
+.logo svg{position:relative;z-index:1;width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
+@keyframes spin{to{--ang:360deg}}
+.brand b{display:block;font-size:14.5px;letter-spacing:-.02em}
+.brand small{display:block;font-size:11px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column;gap:2px;overflow:auto;flex:1;margin:0 -4px;padding:0 4px}
+.nav h6{margin:14px 10px 6px;font-size:10.5px;letter-spacing:.12em;color:var(--dim2);font-weight:600;
+  white-space:nowrap;text-transform:uppercase}
+.nav a{position:relative;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;
+  color:var(--fg2);font-weight:550;font-size:13.5px;white-space:nowrap;transition:color .15s,background .15s}
+.nav a:hover{background:var(--pnl2);color:var(--fg)}
+.nav a .k{margin-left:auto;font:500 10.5px var(--mono);color:var(--dim2);border:1px solid var(--line);
+  border-radius:5px;padding:0 5px;opacity:0;transition:opacity .15s}
+.nav a:hover .k{opacity:1}
+.nav a.on{color:var(--acc-ink);background:transparent}
+.nav a.on::before{content:'';position:absolute;inset:0;border-radius:10px;z-index:-1;
+  background:var(--acc-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 22%,transparent);
+  view-transition-name:navpill}
+.nav a.on .ic{color:var(--acc)}
+.nav a{isolation:isolate}
+.side-ft{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:8px}
+.side-ft a,.side-ft button{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:10px;
+  background:none;border:0;cursor:pointer;color:var(--fg2);font-size:13px;white-space:nowrap;text-align:left}
+.side-ft a:hover,.side-ft button:hover{background:var(--pnl2);color:var(--fg)}
+.shell.mini .nav h6{visibility:hidden;height:8px;margin:6px 0}
+.shell.mini .brand div,.shell.mini .nav a span,.shell.mini .nav a .k,.shell.mini .side-ft span{display:none}
+.shell.mini .nav a,.shell.mini .side-ft a,.shell.mini .side-ft button{justify-content:center;padding:10px}
+
+.stage{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+.bar{position:relative;z-index:20;flex:none;height:60px;display:flex;align-items:center;gap:14px;padding:0 22px;
+  background:var(--glass);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);
+  border-bottom:1px solid var(--line)}
+.crumb{display:flex;align-items:center;gap:8px;min-width:0;font-size:14px;font-weight:600;white-space:nowrap}
+.crumb .sep{color:var(--dim2)}
+.crumb .cur{overflow:hidden;text-overflow:ellipsis}
+.crumb .up{color:var(--dim);font-weight:500}
+.crumb .up:hover{color:var(--acc)}
+.iconbtn.menu-btn{display:none}
+.search{display:flex;align-items:center;gap:9px;height:36px;padding:0 10px 0 12px;min-width:260px;
+  border:1px solid var(--line);border-radius:10px;background:var(--pnl);color:var(--dim);cursor:pointer;
+  font-size:13px;transition:border-color .15s,box-shadow .15s;margin-left:auto}
+.search:hover{border-color:var(--line2);box-shadow:var(--sh-sm)}
+.search kbd,.kbd{font:500 11px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;
+  padding:1px 6px;color:var(--dim);background:var(--pnl2);margin-left:auto}
+.stats{display:flex;align-items:center;gap:0;white-space:nowrap}
+.stats .st{display:flex;align-items:baseline;gap:6px;padding:0 13px;border-left:1px solid var(--line);font-size:12px;color:var(--dim)}
+.stats .st:first-child{border-left:0}
+.stats .st b{font-size:13.5px;color:var(--fg);font-weight:650;font-variant-numeric:tabular-nums}
+.stats .st.t{font:11.5px var(--mono);color:var(--dim2)}
+.livepill{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px;border-radius:99px;
+  background:var(--bad-soft);color:var(--bad);font-size:12px;font-weight:650}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;position:relative;flex:none}
+.dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid currentColor;
+  animation:ping 1.6s var(--ease) infinite;opacity:0}
+@keyframes ping{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+.iconbtn{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:var(--pnl);cursor:pointer;color:var(--fg2);flex:none;transition:all .15s}
+.iconbtn:hover{color:var(--fg);border-color:var(--line2);box-shadow:var(--sh-sm)}
+
+#main{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;view-transition-name:main;
+  background:var(--bg-grad);background-color:var(--bg)}
+:root{--bg-grad:radial-gradient(1100px 520px at 105% -8%,rgba(63,107,255,.09),transparent 62%),
+  radial-gradient(800px 480px at -8% 108%,rgba(124,92,255,.07),transparent 60%)}
+.page{max-width:1480px;margin:0 auto;padding:26px 30px 80px}
+
+::view-transition-old(main){animation:.16s ease both vt-out}
+::view-transition-new(main){animation:.34s var(--ease) both vt-in}
+::view-transition-group(navpill){animation-duration:.36s;animation-timing-function:var(--ease)}
+@keyframes vt-out{to{opacity:0;transform:translateY(-6px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(10px)}}
+.rv{animation:rv .55s var(--ease) both;animation-delay:calc(min(var(--i,0),18) * 30ms)}
+@keyframes rv{from{opacity:0;transform:translateY(12px) scale(.985)}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+.ph{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+.ph .t{min-width:0}
+.ph h1{font-size:26px;line-height:1.2;letter-spacing:-.03em}
+.ph .sub{color:var(--dim);font-size:13px;margin-top:5px}
+.ph .tools{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;letter-spacing:.1em;
+  color:var(--acc);text-transform:uppercase;margin-bottom:6px}
+
+.card{background:var(--pnl);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-xs);
+  min-width:0;container-type:inline-size;position:relative}
+.card-h{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:14px 18px 0;min-height:44px}
+.card-h h3{font-size:14px;font-weight:650;white-space:nowrap}
+.card-h .note{color:var(--dim);font-size:12px;font-weight:500}
+.card-h .r{margin-left:auto;display:flex;gap:6px;align-items:center}
+.card-b{padding:14px 18px 18px}
+.card-b.flush{padding:6px 0 4px}
+.card.scroll .card-b{max-height:var(--mh,640px);overflow:auto}
+.sect{display:flex;align-items:baseline;gap:10px;margin:30px 0 14px}
+.sect h2{font-size:17px}
+.sect .note{color:var(--dim);font-size:12.5px}
+.sect .r{margin-left:auto}
+.g{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gs{grid-template-columns:minmax(0,1fr) 360px}
+@media (max-width:1180px){.g3{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.gs{grid-template-columns:1fr}}
+@media (max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.row{display:flex;align-items:center;gap:10px}
+.wrap{flex-wrap:wrap}
+.sp{flex:1}
+.lbl{font-size:11.5px;font-weight:650;letter-spacing:.06em;color:var(--dim);margin:16px 0 8px;text-transform:uppercase}
+.lbl:first-child{margin-top:0}
+.divider{height:1px;background:var(--line);margin:14px 0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 14px;border-radius:10px;
+  border:1px solid transparent;background:var(--acc);color:#fff;font-size:13px;font-weight:600;cursor:pointer;
+  box-shadow:var(--glow);transition:transform .12s,filter .15s,box-shadow .15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.55;cursor:progress}
+.btn.ghost{background:var(--pnl);color:var(--fg2);border-color:var(--line);box-shadow:var(--sh-xs)}
+.btn.ghost:hover{border-color:var(--line2);color:var(--fg)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px;border-radius:8px}
+.btn .ic{width:15px;height:15px}
+.seg{display:inline-flex;padding:3px;gap:2px;border-radius:11px;background:var(--pnl3);border:1px solid var(--line);
+  max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg a,.seg button{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:8px;
+  border:0;background:none;cursor:pointer;font-size:12.5px;font-weight:550;color:var(--dim);white-space:nowrap}
+.seg a:hover,.seg button:hover{color:var(--fg)}
+.seg .on{background:var(--pnl);color:var(--fg);box-shadow:var(--sh-sm)}
+.seg .n{font:500 11px var(--mono);color:var(--dim2)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:99px;
+  border:1px solid var(--line);background:var(--pnl);font-size:12.5px;color:var(--fg2);cursor:pointer;
+  transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--line2);color:var(--fg)}
+.chip.on{background:var(--fg);border-color:var(--fg);color:var(--pnl)}
+.chip .n{font:500 11px var(--mono);opacity:.6}
+.input,.select{height:34px;border-radius:10px;border:1px solid var(--line);background:var(--pnl);color:var(--fg);
+  padding:0 12px;font:inherit;font-size:13px;min-width:0;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 16%,transparent)}
+.select{padding-right:30px;appearance:none;cursor:pointer;
+  background:var(--pnl) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center}
+.inwrap{position:relative;display:inline-flex;align-items:center}
+.inwrap .ic{position:absolute;left:10px;width:15px;height:15px;color:var(--dim2);pointer-events:none}
+.inwrap .input{padding-left:32px}
+textarea.input{height:auto;padding:9px 12px;resize:vertical}
+
+.pill{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:99px;font-size:11.5px;
+  font-weight:600;background:var(--pnl3);color:var(--fg2);white-space:nowrap}
+.pill.own{background:var(--ok-soft);color:var(--ok)}
+.pill.bm{background:var(--acc-soft);color:var(--acc-ink)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.acc{background:var(--acc-soft);color:var(--acc-ink)}
+.tag{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:7px;font-size:11.5px;
+  font-weight:550;white-space:nowrap;margin:3px 4px 0 0;background:var(--pnl3);color:var(--fg2)}
+.tag::before{content:'';width:6px;height:6px;border-radius:2px;background:var(--tc,var(--dim2))}
+.tag.d-product{--tc:var(--c-p)}.tag.d-sales{--tc:var(--c-s)}.tag.d-interact{--tc:var(--c-i)}.tag.d-risk{--tc:var(--c-r);background:var(--bad-soft);color:var(--bad)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{position:relative;overflow:hidden;background:var(--pnl);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:15px 16px 14px;box-shadow:var(--sh-xs)}
+.kpi i{display:flex;align-items:center;gap:6px;font-style:normal;font-size:12px;color:var(--dim);font-weight:550}
+.kpi i .ic{width:14px;height:14px}
+.kpi b{display:block;font-size:28px;font-weight:650;letter-spacing:-.03em;line-height:1.15;margin-top:6px;
+  font-variant-numeric:tabular-nums}
+.kpi b small{font-size:13px;color:var(--dim);font-weight:500;margin-left:3px;letter-spacing:0}
+.kpi .s{font-size:11.5px;color:var(--dim);margin-top:3px}
+.kpi.hero{background:linear-gradient(135deg,#3f6bff,#6a4dff 60%,#8b5cf6);border:0;color:#fff;box-shadow:var(--glow)}
+.kpi.hero i,.kpi.hero .s,.kpi.hero b small{color:rgba(255,255,255,.78)}
+.kpi.hero::after{content:'';position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.28),transparent 70%)}
+.kpi.sm b{font-size:21px}
+.kpis.k8{grid-template-columns:repeat(8,minmax(0,1fr))}
+@media (max-width:1380px){.kpis.k8{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.kpis.k8{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.meter{display:grid;grid-template-columns:var(--lw,72px) minmax(0,1fr) var(--vw,52px);align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+.meter .l{color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meter .tr{height:8px;background:var(--pnl3);border-radius:99px;overflow:hidden;position:relative}
+.meter .fl{display:block;height:100%;border-radius:99px;background:var(--mc,var(--acc));transform-origin:left;
+  animation:grow .9s var(--ease) both;animation-delay:calc(min(var(--i,0),20)*25ms)}
+.meter .v{text-align:right;font:500 11.5px var(--mono);color:var(--dim)}
+.meter.click{cursor:pointer;border-radius:8px;margin:2px -6px;padding:3px 6px}
+.meter.click:hover{background:var(--pnl2)}
+.meter.click:hover .l{color:var(--acc)}
+@keyframes grow{from{transform:scaleX(0)}}
+.stack{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--pnl3);min-width:120px}
+.stack>span{height:100%;display:block;animation:grow .9s var(--ease) both;transform-origin:left}
+.stack.lg{height:26px;border-radius:9px}
+.stack.lg>span{display:grid;place-items:center;font:600 11px var(--mono);color:#fff;overflow:hidden;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend span::before{content:'';width:10px;height:10px;border-radius:3px;background:var(--lc)}
+
+.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.tbl th{position:sticky;top:0;z-index:1;background:var(--pnl);text-align:left;font-size:11.5px;font-weight:650;
+  color:var(--dim);letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:hover{background:var(--pnl2)}
+.tbl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl th.sortable{cursor:pointer;user-select:none}
+.tbl th.sortable:hover{color:var(--fg)}
+.tbl th.sorted{color:var(--acc)}
+.tbl tr.link{cursor:pointer}
+.tbl tfoot td{font-weight:650;border-top:2px solid var(--line2);background:var(--pnl2)}
+.tblwrap{overflow:auto;max-width:100%}
+.pos{color:var(--ok)}.neg{color:var(--bad)}.wrn{color:var(--warn)}
+
+.item{position:relative;padding:11px 0 11px 14px;border-bottom:1px dashed var(--line)}
+.item:last-child{border-bottom:0}
+.item::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--ib,var(--acc))}
+.item.ok{--ib:var(--ok)}.item.warn{--ib:var(--c-s)}.item.bad{--ib:var(--bad)}.item.mute{--ib:var(--line2)}
+.item .h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-weight:600;font-size:13.5px}
+.item .d{font-size:13px;color:var(--fg2);margin-top:3px;line-height:1.65}
+.item .x{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.6}
+.quote{position:relative;margin-top:7px;padding:8px 12px 8px 30px;border-radius:10px;background:var(--pnl2);font-size:12.5px;line-height:1.7;color:var(--fg2)}
+.quote::before{content:'“';position:absolute;left:10px;top:1px;font:700 22px Georgia,serif;color:var(--dim2)}
+.ts{display:inline-flex;align-items:center;height:19px;padding:0 6px;border-radius:5px;background:var(--acc-soft);
+  color:var(--acc-ink);font:600 10.5px var(--mono);margin-right:6px;vertical-align:1px;white-space:nowrap}
+.empty{display:grid;place-items:center;gap:10px;text-align:center;color:var(--dim);font-size:13px;padding:48px 20px}
+.empty .ic{width:30px;height:30px;color:var(--dim2)}
+.empty.sm{padding:22px 10px}
+.callout{display:flex;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid;font-size:13px;line-height:1.65}
+.callout .ic{margin-top:2px}
+.callout.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 30%,transparent);color:var(--warn)}
+.callout.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 30%,transparent);color:var(--bad)}
+.callout.acc{background:var(--acc-soft);border-color:color-mix(in srgb,var(--acc) 25%,transparent);color:var(--acc-ink)}
+.callout b{font-weight:650}
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:2px}
+.steps>div{position:relative;padding:7px 0 7px 36px;font-size:13px;line-height:1.6;color:var(--fg2)}
+.steps>div::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:6px;width:24px;height:24px;
+  border-radius:8px;display:grid;place-items:center;background:var(--acc-soft);color:var(--acc-ink);font:650 11.5px var(--mono)}
+.steps>div:not(:last-child)::after{content:'';position:absolute;left:11.5px;top:32px;bottom:-4px;width:1px;background:var(--line2)}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.chain span{padding:5px 11px;border-radius:9px;background:var(--pnl);border:1px solid var(--line);font-size:12.5px;font-weight:550}
+.chain i{color:var(--dim2);font-style:normal}
+
+.skel{border-radius:14px;background:linear-gradient(90deg,var(--pnl2) 25%,var(--pnl3) 37%,var(--pnl2) 63%);
+  background-size:400% 100%;animation:shimmer 1.4s ease infinite}
+@keyframes shimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;margin-bottom:8px}
+.hero .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hero .kpi b small{white-space:nowrap}
+@media (max-width:1100px){.hero{grid-template-columns:1fr}}
+.act{display:flex;align-items:flex-end;gap:5px;height:118px;padding-top:6px}
+.act .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px;position:relative;min-width:0}
+.act .col>span{display:block;border-radius:4px 4px 2px 2px;animation:growy .8s var(--ease) both;transform-origin:bottom;
+  animation-delay:calc(var(--i,0)*35ms)}
+.act .col .o{background:var(--c-i)}.act .col .b{background:var(--c-p)}
+.act .col .z{height:3px;background:var(--pnl3)}
+.act .col:hover>span{filter:brightness(1.12)}
+.act-x{display:flex;gap:5px;margin-top:6px}
+.act-x span{flex:1;text-align:center;font:10.5px var(--mono);color:var(--dim2);min-width:0;overflow:hidden}
+@keyframes growy{from{transform:scaleY(0)}}
+.toolbar{position:sticky;top:0;z-index:5;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  margin:22px -30px 16px;padding:12px 30px;background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.room{position:relative;display:flex;flex-direction:column;background:var(--pnl);border:1px solid var(--line);
+  border-radius:18px;overflow:hidden;box-shadow:var(--sh-xs);transition:transform .25s var(--ease),box-shadow .25s,border-color .25s}
+a.room:hover{transform:translateY(-4px);box-shadow:var(--sh-md);border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+.room.dead{opacity:.72}
+.cover{position:relative;aspect-ratio:3/4;background:var(--pnl3);overflow:hidden;touch-action:pan-y}
+.cover img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+#main.quiet .rv,#main.quiet .fl,#main.quiet .act span,#main.quiet .ring-v{animation:none}
+a.room:hover .cover img{transform:scale(1.03)}
+.cover .ph0{position:absolute;inset:0;display:grid;place-items:center;
+  background:radial-gradient(120% 90% at 20% 0%,color-mix(in srgb,var(--acc) 22%,transparent),transparent),var(--pnl2)}
+.cover .ph0 b{font-size:54px;font-weight:700;color:color-mix(in srgb,var(--acc) 55%,transparent)}
+.cover img.broken{display:none}
+.cover .top{position:absolute;inset:10px 10px auto;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
+.cover .top .pill{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.cover .top .pill.live{background:#ef4444;color:#fff}
+.cover .top .pill.glass{background:rgba(10,12,17,.45);color:#fff}
+.cover .top .pill.glass.own{background:rgba(5,150,105,.85)}
+.cover .btm{position:absolute;inset:auto 0 0;padding:34px 12px 10px;display:flex;justify-content:space-between;
+  font:500 11.5px var(--mono);color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.72));z-index:2}
+.scrub{position:absolute;left:0;bottom:0;height:3px;width:100%;z-index:3;opacity:0;transition:opacity .2s}
+.scrub i{display:block;height:100%;width:var(--p,0%);background:#fff;box-shadow:0 0 8px #fff}
+.scrubt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;padding:4px 10px;border-radius:8px;
+  background:rgba(0,0,0,.6);color:#fff;font:600 12px var(--mono);opacity:0;transition:opacity .2s;pointer-events:none}
+.cover.scrubbing .scrub,.cover.scrubbing .scrubt{opacity:1}
+.cover.scrubbing .btm{opacity:0}
+.room .bd{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px}
+.room .nm{font-weight:650;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room .mt{display:flex;justify-content:space-between;gap:6px;font-size:12px;color:var(--dim)}
+.room .dm{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.room .dm div{font-size:10.5px;color:var(--dim)}
+.room .dm i{display:block;height:4px;border-radius:9px;background:var(--pnl3);margin-top:3px;overflow:hidden}
+.room .dm u{display:block;height:100%;border-radius:9px;background:var(--dc)}
+.room[hidden]{display:none}
+
+.shead{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+.shead .poster{width:92px;aspect-ratio:3/4;border-radius:14px;overflow:hidden;flex:none;background:var(--pnl3);box-shadow:var(--sh-md);cursor:zoom-in}
+.shead .poster img{width:100%;height:100%;object-fit:cover;display:block}
+.shead h1{font-size:25px;letter-spacing:-.03em}
+.shead .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;color:var(--dim);font-size:12.5px}
+.shead .acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.sessbar{display:flex;gap:6px;overflow:auto;padding:2px 0 4px;margin-top:10px}
+.sessbar a{flex:none;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:8px;
+  border:1px solid var(--line);font:500 11.5px var(--mono);color:var(--dim);background:var(--pnl)}
+.sessbar a:hover{color:var(--fg);border-color:var(--line2)}
+.sessbar a.on{background:var(--fg);color:var(--pnl);border-color:var(--fg)}
+.sessbar a .ok{color:var(--ok)}
+.sessbar a.on .ok{color:inherit}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 18px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{position:relative;padding:10px 14px;font-size:13.5px;font-weight:600;color:var(--dim);white-space:nowrap}
+.tabs a:hover{color:var(--fg)}
+.tabs a.on{color:var(--fg)}
+.tabs a.on::after{content:'';position:absolute;left:10px;right:10px;bottom:-1px;height:2px;border-radius:2px;background:var(--acc);
+  view-transition-name:tabline}
+.tabs a.off{opacity:.4;pointer-events:none}
+.tl{display:grid;grid-template-columns:54px minmax(0,1fr);gap:8px;position:relative}
+.tl-y{position:relative;font-size:11px;color:var(--dim);font-weight:550}
+.tl-y span{position:absolute;right:0}
+.tl-x{position:relative;min-width:0;height:150px;cursor:crosshair;touch-action:pan-y}
+.tl-x svg{display:block;overflow:visible}
+.tl-rd{fill:var(--pnl3)}.tl-rd.b{fill:var(--pnl2)}
+.tl-rt{font:600 10px var(--sans);fill:var(--dim)}
+.tl-dm{fill:var(--dim2);opacity:.55}
+.tl-buy{fill:var(--ok)}
+.tl-rk{fill:var(--c-r)}
+.tl-ax{font:10px var(--mono);fill:var(--dim2)}
+.tl-gl{stroke:var(--line);stroke-width:1}
+.tl-cur{stroke:var(--fg);stroke-width:1.2;opacity:0;transition:opacity .15s;pointer-events:none}
+.tl-x.hot .tl-cur{opacity:.75}
+.f-p{fill:var(--c-p)}.f-s{fill:var(--c-s)}.f-i{fill:var(--c-i)}.f-r{fill:var(--c-r)}.f-o{fill:var(--line2)}
+.tl-tip{position:absolute;top:-10px;z-index:6;width:300px;display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;
+  padding:8px;border-radius:14px;background:var(--pnl);border:1px solid var(--line);box-shadow:var(--sh-lg);pointer-events:none;
+  opacity:0;transform:translateY(-100%) scale(.96);transform-origin:bottom center;transition:opacity .15s,transform .15s}
+.tl-x.hot .tl-tip{opacity:1;transform:translateY(-100%) scale(1)}
+.tl-tip img{width:92px;aspect-ratio:3/4;object-fit:cover;border-radius:9px;display:block;background:var(--pnl3)}
+.tl-tip .tx{font-size:12px;line-height:1.55;margin-top:5px;color:var(--fg2);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.tl-tip .tg .tag{height:19px;font-size:10.5px}
+.trl{display:flex;flex-direction:column}
+.trl .sg{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);
+  transition:background .3s}
+.trl .sg:hover{background:var(--pnl2)}
+.trl .sg.flash{animation:flash 1.6s ease}
+@keyframes flash{0%,40%{background:var(--acc-soft)}}
+.trl .sg img{width:72px;aspect-ratio:3/4;object-fit:cover;border-radius:9px;background:var(--pnl3);cursor:zoom-in;display:block}
+.trl .sg img.broken{visibility:hidden}
+.trl .tx{font-size:13.5px;line-height:1.75;color:var(--fg);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.trl .sg.open .tx{-webkit-line-clamp:unset;display:block}
+.trl .hd{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.trl .hd .r{margin-left:auto;font-size:11.5px;color:var(--dim)}
+.trl[data-f=product] .sg:not(.h-product),.trl[data-f=sales] .sg:not(.h-sales),.trl[data-f=interact] .sg:not(.h-interact),
+.trl[data-f=danmu] .sg:not(.h-danmu),.trl[data-f=risk] .sg:not(.h-risk){display:none}
+.trl .sg[hidden]{display:none}
+.dmf{display:flex;flex-direction:column}
+.dmf div{padding:7px 18px;font-size:12.5px;border-bottom:1px solid var(--line);line-height:1.55}
+.dmf .nk{color:var(--dim);margin-right:6px}
+.dmf .at{color:var(--acc);margin-right:4px}
+.spam{display:flex;gap:8px;padding:5px 18px;font-size:12px;color:var(--dim)}
+.spam b{font:600 11px var(--mono);color:var(--warn);flex:none}
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.wall button{position:relative;padding:0;border:0;border-radius:9px;overflow:hidden;cursor:zoom-in;background:var(--pnl3);aspect-ratio:3/4}
+.wall img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s var(--ease)}
+.wall button:hover img{transform:scale(1.06)}
+.wall button span{position:absolute;left:4px;bottom:4px;padding:0 5px;border-radius:5px;background:rgba(0,0,0,.6);color:#fff;font:10px var(--mono)}
+details.card>summary{list-style:none;cursor:pointer}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary .chev{transition:transform .2s}
+details.card[open]>summary .chev{transform:rotate(90deg)}
+.rounds{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.rcard{display:flex;flex-direction:column;gap:8px;text-align:left;padding:14px 16px;border-radius:16px;background:var(--pnl);
+  border:1px solid var(--line);box-shadow:var(--sh-xs);cursor:pointer;transition:all .2s var(--ease)}
+.rcard:hover{border-color:color-mix(in srgb,var(--acc) 45%,var(--line));box-shadow:var(--sh-md);transform:translateY(-2px)}
+.rcard.off{cursor:default;opacity:.7}
+.rcard.off:hover{transform:none;box-shadow:var(--sh-xs);border-color:var(--line)}
+.rcard .h{display:flex;align-items:baseline;gap:8px}
+.rcard .h b{font:700 12px var(--mono);color:var(--acc)}
+.rcard .h span{font-weight:650;font-size:13.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rcard .h em{font:11px var(--mono);color:var(--dim);font-style:normal}
+.rcard p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.6}
+.sc4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sc4 div{font-size:10.5px;color:var(--dim)}
+.sc4 i{display:flex;gap:2px;margin-top:4px}
+.sc4 i u{flex:1;height:5px;border-radius:2px;background:var(--pnl3)}
+.sc4 i u.on{background:var(--acc)}
+
+.ring{position:relative;display:inline-grid;place-items:center;flex:none}
+.ring svg{position:absolute;inset:0;width:100%;height:100%}
+.ring-t{fill:none;stroke:var(--pnl3)}
+.ring-v{fill:none;stroke-linecap:round;stroke-dashoffset:var(--o);animation:ringin 1.2s var(--ease) both}
+@keyframes ringin{from{stroke-dashoffset:var(--c)}}
+.ring-l{position:relative;text-align:center;line-height:1}
+.ring-l b{font-size:var(--fs,30px);font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.ring-l small{display:block;font-size:11px;color:var(--dim);margin-top:5px;font-weight:550}
+.radar{overflow:visible}
+.radar text{font:600 11.5px var(--sans);fill:var(--fg2)}
+.radar .gd{fill:none;stroke:var(--line)}
+.radar .gd.o{stroke:var(--line2)}
+.radar .ax{stroke:var(--line)}
+.radar .sr{transform-box:view-box;transform-origin:50% 50%;animation:rin .9s var(--ease) both}
+.radar .vl{font:650 10.5px var(--mono)}
+@keyframes rin{from{transform:scale(.15);opacity:0}}
+.bullet{position:relative;height:22px}
+.bullet .tr{position:absolute;inset:7px 0;border-radius:99px;background:var(--pnl3)}
+.bullet .fl{position:absolute;left:0;top:7px;height:8px;border-radius:99px;background:var(--bc);transform-origin:left;animation:grow .9s var(--ease) both}
+.bullet .mk{position:absolute;top:2px;width:2px;height:18px;border-radius:2px;background:var(--fg);transform:translateX(-1px)}
+.bullet .mk::after{content:'标杆';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:9.5px;color:var(--dim);white-space:nowrap}
+.trow{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(160px,2fr) 80px 80px 70px 64px;gap:14px;align-items:center;
+  padding:13px 18px;border-top:1px solid var(--line)}
+.trow:first-child{border-top:0}
+.trow .nm b{font-weight:600;font-size:13px}
+.trow .nm div{font-size:11.5px;color:var(--dim);margin-top:2px;line-height:1.5}
+.trow .v{text-align:right;font-variant-numeric:tabular-nums;font-size:13px}
+.trow .v small{display:block;color:var(--dim);font-size:10.5px}
+.trow .sc{text-align:right;font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
+.trow .sc small{font-size:10.5px;color:var(--dim);font-weight:500}
+.thead{padding-top:10px;padding-bottom:6px;font-size:11px;color:var(--dim);font-weight:650;letter-spacing:.04em}
+@container (max-width:720px){.trow{grid-template-columns:1fr 70px 64px}.trow .bl,.trow .v.b,.trow .st{display:none}}
+.lvlh{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.lvlh h3{font-size:14.5px}
+.lvlh .r{margin-left:auto;display:flex;gap:10px;align-items:center}
+.lvlbar{width:90px;height:6px;border-radius:9px;background:var(--pnl3);overflow:hidden}
+.lvlbar i{display:block;height:100%;border-radius:9px;background:var(--lc);animation:grow .9s var(--ease) both;transform-origin:left}
+.action{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:16px 18px;border-top:1px solid var(--line)}
+.action:first-child{border-top:0}
+.action .p{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:700 13px var(--mono);
+  background:var(--acc-soft);color:var(--acc-ink)}
+.action:first-child .p{background:linear-gradient(135deg,#3f6bff,#8b5cf6);color:#fff;box-shadow:var(--glow)}
+.action h4{font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.action p{margin:5px 0 0;font-size:13px;color:var(--fg2);line-height:1.7}
+.cloud{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.cloud span{font-weight:650;color:var(--acc-ink);line-height:1.2}
+.cloud span small{font:500 10.5px var(--mono);color:var(--dim);margin-left:3px}
+.picker{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scroll-snap-type:x mandatory}
+.picker a{scroll-snap-align:start;flex:none;display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:14px;
+  border:1px solid var(--line);background:var(--pnl);min-width:200px;transition:all .2s}
+.picker a:hover{border-color:var(--line2);box-shadow:var(--sh-sm)}
+.picker a.on{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 16%,transparent)}
+.picker img{width:38px;height:50px;border-radius:8px;object-fit:cover;background:var(--pnl3)}
+.picker b{display:block;font-size:13px;font-weight:600;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.picker small{font-size:11.5px;color:var(--dim)}
+
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:18px;align-items:center}
+.vs .side2{display:flex;gap:14px;align-items:center;min-width:0}
+.vs .side2.b{flex-direction:row-reverse;text-align:right}
+.vs .side2 img{width:74px;aspect-ratio:3/4;object-fit:cover;border-radius:12px;background:var(--pnl3);box-shadow:var(--sh-md);cursor:zoom-in}
+.vs .side2 b{display:block;font-size:15px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs .disc{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font:800 15px var(--mono);color:#fff;
+  background:linear-gradient(135deg,#3f6bff,#8b5cf6);box-shadow:var(--glow)}
+.vs select{max-width:100%}
+.insights{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.insights div{flex:1;min-width:210px;display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:12px;background:var(--pnl2);font-size:12.5px;line-height:1.6}
+.insights .ic{margin-top:1px}
+.db{display:grid;grid-template-columns:78px minmax(0,1fr) 60px;gap:12px;align-items:center;padding:9px 0;font-size:12.5px}
+.db .tr{position:relative;height:18px}
+.db .tr::before{content:'';position:absolute;left:0;right:0;top:8px;height:2px;border-radius:2px;background:var(--pnl3)}
+.db .ln{position:absolute;top:8px;height:2px;background:var(--line2)}
+.db .pt{position:absolute;top:3px;width:12px;height:12px;border-radius:50%;transform:translateX(-6px);border:2px solid var(--pnl);box-shadow:0 0 0 1px var(--line2)}
+.db .pt.a{background:var(--acc)}.db .pt.b{background:var(--dim2)}
+.db .v{text-align:right;font:600 12px var(--mono)}
+.dv{display:grid;grid-template-columns:110px minmax(0,1fr) 110px;gap:12px;align-items:center;padding:8px 0;font-size:12.5px}
+.dv .tr{position:relative;height:20px;background:linear-gradient(var(--line),var(--line)) center/1px 100% no-repeat}
+.dv .fl{position:absolute;top:4px;height:12px;border-radius:4px;animation:grow .8s var(--ease) both}
+.dv .fl.r{left:50%;transform-origin:left}
+.dv .fl.l{right:50%;transform-origin:right}
+.dv .v{font:12px var(--mono);color:var(--dim);text-align:right}
+.dv .v b{color:var(--fg)}
+
+.strip{display:grid;grid-template-columns:130px minmax(0,1fr) 150px;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.strip:first-child{border-top:0}
+.strip .l b{display:block;font-size:13px;font-weight:600}
+.strip .l small{font-size:11px;color:var(--dim)}
+.strip .tr{position:relative;height:34px}
+.strip .tr::before{content:'';position:absolute;left:0;right:0;top:15px;height:4px;border-radius:9px;background:var(--pnl3)}
+.strip .rg{position:absolute;top:15px;height:4px;border-radius:9px;background:color-mix(in srgb,var(--acc) 28%,transparent)}
+.strip .iq{position:absolute;top:11px;height:12px;border-radius:5px;background:color-mix(in srgb,var(--acc) 55%,transparent)}
+.strip .md{position:absolute;top:6px;width:3px;height:22px;border-radius:3px;background:var(--acc);transform:translateX(-1.5px)}
+.strip .ow{position:absolute;top:10px;width:14px;height:14px;border-radius:50%;background:var(--ok);border:2px solid var(--pnl);
+  transform:translateX(-7px);box-shadow:var(--sh-sm);cursor:help}
+.strip .ax{position:absolute;top:26px;font:10px var(--mono);color:var(--dim2);transform:translateX(-50%)}
+.strip .v{font:12px var(--mono);color:var(--dim);text-align:right;line-height:1.5}
+.strip .v b{color:var(--acc);font-size:14px}
+
+.consensus{position:relative;overflow:hidden;padding:24px 26px;border-radius:22px;color:#fff;
+  background:radial-gradient(120% 140% at 0% 0%,#5b7dff 0%,#3f5ef0 35%,#5b3fd8 70%,#7a3fd0 100%);box-shadow:var(--glow)}
+.consensus::before{content:'';position:absolute;inset:-40%;background:conic-gradient(from var(--ang),transparent,rgba(255,255,255,.14),transparent 30%);
+  animation:spin 14s linear infinite}
+.consensus>*{position:relative}
+.consensus p{font-size:14.5px;line-height:1.85;margin:10px 0 0;color:rgba(255,255,255,.94);max-width:980px}
+.consensus .chain span{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#fff}
+.consensus .chain i{color:rgba(255,255,255,.6)}
+.consensus .eyebrow{color:rgba(255,255,255,.8)}
+.consensus .meta{font-size:12px;color:rgba(255,255,255,.7);margin-top:12px}
+.plays{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.play{padding:16px;border-radius:16px;background:var(--pnl);border:1px solid var(--line);box-shadow:var(--sh-xs)}
+.play h4{font-size:14px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.play h4 small{font-size:11.5px;color:var(--dim);font-weight:500;white-space:nowrap}
+.play p{font-size:13px;color:var(--fg2);line-height:1.7;margin:6px 0 0}
+.play .why{margin-top:8px;font-size:12px;color:var(--dim);line-height:1.6}
+.tpl{position:relative;padding:14px 16px;border-radius:14px;background:var(--pnl2);border:1px solid var(--line);margin-top:10px}
+.tpl:first-child{margin-top:0}
+.tpl .t{font-size:13.5px;line-height:1.8;margin:8px 0 4px;color:var(--fg)}
+.tpl .copy{position:absolute;top:10px;right:10px}
+.acc-list details{border-top:1px solid var(--line)}
+.acc-list details:first-child{border-top:0}
+.acc-list summary{display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;list-style:none}
+.acc-list summary::-webkit-details-marker{display:none}
+.acc-list summary b{font-size:13.5px}
+.acc-list summary .chev{margin-left:auto;transition:transform .2s;color:var(--dim)}
+.acc-list details[open] summary .chev{transform:rotate(90deg)}
+.acc-list .in{padding:0 18px 18px}
+
+.dtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.dtile{padding:14px 15px;border-radius:14px;background:var(--pnl);border:1px solid var(--line)}
+.dtile .k{font-size:12.5px;font-weight:600}
+.dtile .d{font-size:11px;color:var(--dim);min-height:16px}
+.dtile b{display:block;font-size:24px;font-weight:650;letter-spacing:-.03em;margin:4px 0 8px;font-variant-numeric:tabular-nums}
+.dtile .rng{position:relative;height:6px;border-radius:9px;background:var(--pnl3)}
+.dtile .rng i{position:absolute;top:0;height:100%;border-radius:9px;background:color-mix(in srgb,var(--acc) 35%,transparent)}
+.dtile .rng u{position:absolute;top:-3px;width:3px;height:12px;border-radius:2px;background:var(--acc);transform:translateX(-1.5px)}
+.dtile .mm{display:flex;justify-content:space-between;font:10.5px var(--mono);color:var(--dim2);margin-top:5px}
+.vmk{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:0 5px;height:16px;border-radius:5px;font-size:10px;font-weight:650;background:var(--acc-soft);color:var(--acc-ink);vertical-align:1px}
+
+.anlay{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.anlay{grid-template-columns:1fr}}
+.anlist{position:sticky;top:0;max-height:calc(100dvh - 150px);display:flex;flex-direction:column}
+.anlist .srch{padding:12px;border-bottom:1px solid var(--line)}
+.anlist .ls{overflow:auto;padding:6px}
+.anlist a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px}
+.anlist a:hover{background:var(--pnl2)}
+.anlist a.on{background:var(--acc-soft)}
+.anlist a[hidden]{display:none}
+.av{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none;color:#fff;
+  background:hsl(var(--h,220) 70% 58%)}
+.anlist b{display:block;font-size:13px;font-weight:600}
+.anlist small{display:block;font-size:11.5px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+.anlist .n{margin-left:auto;font:500 11px var(--mono);color:var(--dim2)}
+.cal{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,13px);gap:3px;overflow-x:auto;padding-bottom:4px}
+.cal i{width:13px;height:13px;border-radius:3px;background:var(--pnl3)}
+.cal i.on{background:var(--acc)}
+.cal i.pad{background:transparent}
+.calm{display:flex;gap:0;font:10px var(--mono);color:var(--dim2);margin-bottom:4px;padding-left:1px}
+
+.health{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;padding:20px 24px}
+@media (max-width:760px){.health{grid-template-columns:1fr}}
+.health .st{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;color:#fff;box-shadow:var(--sh-md)}
+.health .st .ic{width:30px;height:30px;stroke-width:2.2}
+.health .st.ok{background:linear-gradient(135deg,#10b981,#059669)}
+.health .st.warn{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.health .st.bad{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.health h2{font-size:19px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.dcard{position:relative;display:flex;flex-direction:column;gap:10px;padding:16px 16px 14px;border-radius:16px;background:var(--pnl);
+  border:1px solid var(--line);box-shadow:var(--sh-xs);transition:transform .2s var(--ease),box-shadow .2s,border-color .2s}
+.dcard:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:color-mix(in srgb,var(--acc) 40%,var(--line))}
+.dcard[hidden]{display:none}
+.dcard .h{display:flex;align-items:flex-start;gap:12px}
+.dcard .bx{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--acc-soft);color:var(--acc-ink)}
+.dcard .bx.drill{background:var(--warn-soft);color:var(--warn)}
+.dcard .bx.audit{background:var(--pur-soft);color:var(--pur)}
+.dcard b{font-size:14px;font-weight:650;line-height:1.4;display:block}
+.dcard .mp{display:flex;flex-wrap:wrap;gap:5px}
+.dcard .rate{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:11.5px;color:var(--dim)}
+.dcard .rate i{height:6px;border-radius:9px;background:var(--pnl3);overflow:hidden}
+.dcard .rate u{display:block;height:100%;border-radius:9px;background:var(--rc);transform-origin:left;animation:grow .9s var(--ease) both}
+.dcard .ft{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px;border-top:1px dashed var(--line);
+  font-size:11.5px;color:var(--dim)}
+.dcard .ft .go{color:var(--acc);font-weight:600;display:inline-flex;gap:4px;align-items:center}
+.dcard .ft .go .ic{width:14px;height:14px}
+section[data-dsect][hidden]{display:none}
+.docl{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:18px;align-items:start}
+@media (max-width:1100px){.docl{grid-template-columns:1fr}.toc{display:none}}
+.toc{position:sticky;top:0;max-height:calc(100dvh - 120px);overflow:auto;padding:14px 12px}
+.toc a{display:block;padding:5px 10px;border-radius:8px;font-size:12.5px;color:var(--dim);line-height:1.5;border-left:2px solid transparent}
+.toc a.l3{padding-left:22px;font-size:12px}
+.toc a:hover{color:var(--fg);background:var(--pnl2)}
+.toc a.on{color:var(--acc-ink);background:var(--acc-soft);border-left-color:var(--acc)}
+.prose{padding:30px 38px 44px;font-size:14.5px;line-height:1.85;color:var(--fg2)}
+@media (max-width:760px){.prose{padding:20px 18px 30px}}
+.prose h2{font-size:19px;color:var(--fg);margin:36px 0 14px;padding-top:18px;border-top:1px solid var(--line);scroll-margin-top:16px}
+.prose h2:first-child{margin-top:0;padding-top:0;border-top:0}
+.prose h3{font-size:15.5px;color:var(--fg);margin:26px 0 8px;scroll-margin-top:16px}
+.prose p{margin:8px 0}
+.prose strong{color:var(--fg)}
+.prose ul{margin:8px 0;padding-left:20px}
+.prose li{margin:5px 0}
+.prose li.sub{list-style:none;margin:6px 0 6px -20px;padding:9px 12px;border-radius:10px;background:var(--pnl2);font-size:13.5px;line-height:1.75}
+.prose .src{font-size:11.5px;color:var(--dim);margin-right:6px}
+.prose table{width:100%;border-collapse:separate;border-spacing:0;margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13.5px}
+.prose th{background:var(--pnl2);color:var(--dim);font-size:12px;font-weight:650;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.prose td{padding:9px 12px;border-bottom:1px solid var(--line)}
+.prose tr:last-child td{border-bottom:0}
+.prose td.num{text-align:right;font-variant-numeric:tabular-nums}
+.prose blockquote{margin:12px 0;padding:10px 14px;border-radius:12px;background:var(--acc-soft);color:var(--acc-ink)}
+.prose hr{border:0;border-top:1px dashed var(--line2);margin:26px 0}
+.hl{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.hl .pill{flex:none;min-width:52px;justify-content:center;font-family:var(--mono)}
+.hpre{font:12.5px/1.75 var(--mono);color:var(--dim);white-space:pre-wrap;padding:2px 0 2px 62px}
+
+.ov{position:fixed;inset:0;z-index:100;display:flex;background:rgba(8,10,16,.46);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  animation:fade .18s ease both}
+.ov.closing{animation:fadeo .16s ease both}
+@keyframes fade{from{opacity:0}}
+@keyframes fadeo{to{opacity:0}}
+.pal{margin:12vh auto auto;width:min(640px,calc(100vw - 32px));background:var(--pnl);border:1px solid var(--line);border-radius:18px;
+  box-shadow:var(--sh-lg);overflow:hidden;animation:pop .22s var(--ease) both}
+@keyframes pop{from{opacity:0;transform:translateY(-8px) scale(.98)}}
+.pal .in{display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--line)}
+.pal .in .ic{color:var(--dim)}
+.pal input{flex:1;height:56px;border:0;background:none;font:inherit;font-size:16px;color:var(--fg);outline:none}
+.pal .res{max-height:min(60vh,460px);overflow:auto;padding:8px}
+.pal .grp{padding:10px 10px 4px;font-size:11px;font-weight:650;color:var(--dim2);letter-spacing:.08em}
+.pal .it{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;cursor:pointer}
+.pal .it.on{background:var(--acc-soft)}
+.pal .it .bx{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--pnl3);color:var(--fg2);flex:none}
+.pal .it.on .bx{background:var(--acc);color:#fff}
+.pal .it .ic{width:16px;height:16px}
+.pal .it b{font-weight:600;font-size:13.5px}
+.pal .it b mark{background:none;color:var(--acc);font-weight:700}
+.pal .it small{display:block;font-size:11.5px;color:var(--dim)}
+.pal .it .go{margin-left:auto;font-size:11px;color:var(--dim2)}
+.pal .ft{display:flex;gap:14px;padding:10px 16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--dim)}
+.pal .ft span{display:inline-flex;gap:5px;align-items:center}
+.pal .ft .kbd{margin:0}
+.lb{background:rgba(5,6,10,.9);flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.lb img{max-width:min(92vw,1100px);max-height:80vh;border-radius:14px;box-shadow:var(--sh-lg);animation:pop .25s var(--ease) both;background:#111}
+.lb .cap{color:#fff;font-size:13px;text-align:center}
+.lb .cap small{display:block;color:rgba(255,255,255,.6);font:11.5px var(--mono);margin-top:3px}
+.lb .nv{position:fixed;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:0;display:grid;place-items:center;
+  background:rgba(255,255,255,.12);color:#fff;cursor:pointer;backdrop-filter:blur(8px)}
+.lb .nv:hover{background:rgba(255,255,255,.22)}
+.lb .nv.p{left:22px}.lb .nv.n{right:22px}
+.lb .cl{position:fixed;top:18px;right:18px}
+.lb .film{display:flex;gap:6px;max-width:92vw;overflow-x:auto;padding:4px}
+.lb .film button{flex:none;width:44px;height:58px;padding:0;border:2px solid transparent;border-radius:7px;overflow:hidden;cursor:pointer;opacity:.5;background:#222}
+.lb .film button.on{border-color:#fff;opacity:1}
+.lb .film img{width:100%;height:100%;object-fit:cover;border-radius:0;box-shadow:none;animation:none;max-height:none}
+.drw{justify-content:flex-end;padding:0}
+.drw .pnl{width:min(760px,100vw);height:100%;background:var(--bg);border-left:1px solid var(--line);box-shadow:var(--sh-lg);
+  display:flex;flex-direction:column;animation:slidein .32s var(--ease) both}
+.ov.closing .pnl{animation:slideout .2s ease both}
+@keyframes slidein{from{transform:translateX(40px);opacity:0}}
+@keyframes slideout{to{transform:translateX(40px);opacity:0}}
+.drw .hd{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--pnl)}
+.drw .hd h3{font-size:16px}
+.drw .hd .r{margin-left:auto}
+.drw .bd{flex:1;overflow:auto;padding:18px 20px 40px}
+.help{margin:auto;width:min(460px,calc(100vw - 32px));background:var(--pnl);border-radius:18px;border:1px solid var(--line);box-shadow:var(--sh-lg);padding:20px 22px;animation:pop .2s var(--ease) both}
+.help h3{margin-bottom:12px}
+.help div{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.help div:last-child{border:0}
+.help .kbd{margin:0 0 0 4px}
+#toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:var(--fg);color:var(--pnl);font-size:13px;
+  box-shadow:var(--sh-lg);animation:pop .25s var(--ease) both}
+.toast .ic{width:16px;height:16px}
+.progress{position:fixed;top:0;left:0;height:2px;z-index:300;background:linear-gradient(90deg,var(--acc),var(--acc2));
+  width:0;opacity:0;transition:width .4s var(--ease),opacity .3s;box-shadow:0 0 10px var(--acc)}
+.progress.on{opacity:1}
+
+.kinds{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.kinds label{position:relative;display:flex;gap:10px;align-items:flex-start;padding:13px 14px;border-radius:14px;border:1px solid var(--line);
+  background:var(--pnl);cursor:pointer;transition:all .15s}
+.kinds label:hover{border-color:var(--line2)}
+.kinds input{position:absolute;opacity:0}
+.kinds label:has(input:checked){border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 15%,transparent);background:var(--acc-soft)}
+.kinds .bx{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--pnl3);flex:none}
+.kinds label:has(input:checked) .bx{background:var(--acc);color:#fff}
+.kinds b{display:block;font-size:13px}
+.kinds small{font-size:11.5px;color:var(--dim)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.fgrid label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--fg2)}
+
+@media (max-width:1320px){.stats .st.hide1{display:none}}
+@media (max-width:1100px){.stats{display:none}}
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;inset:52px auto 0 0;width:260px;transform:translateX(-102%);transition:transform .3s var(--ease);box-shadow:var(--sh-lg)}
+  .shell.open .side{transform:none}
+  .shell.mini .brand div,.shell.mini .nav a span,.shell.mini .side-ft span{display:revert}
+  .iconbtn.menu-btn{display:inline-grid}
+  .hero .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .search{min-width:0;width:36px;padding:0;justify-content:center}
+  .search span,.search kbd{display:none}
+  .bar{padding:0 16px}
+  .page{padding:18px 16px 70px}
+  .toolbar{margin:16px -16px 12px;padding:10px 16px}
+  .ph h1{font-size:22px}
+  .rooms{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .vs{grid-template-columns:1fr;text-align:center}
+  .vs .side2,.vs .side2.b{flex-direction:column;text-align:center}
+  .vs .disc{margin:auto}
+  .strip{grid-template-columns:1fr;gap:6px}
+  .strip .v{text-align:left}
+  .trl .sg{grid-template-columns:52px minmax(0,1fr);padding:10px 14px}
+  .trl .sg img{width:52px}
+  .tl{grid-template-columns:minmax(0,1fr)}
+  .tl-y{display:none}
+  .dv{grid-template-columns:80px minmax(0,1fr) 80px}
+  .lb .nv{display:none}
+}
+.scrim{display:none}
+
+:root{--g-bg:rgba(255,255,255,.78);--g-line:#E7EBF1;--g-ink:#0F172A;--g-ink2:#334155;--g-ink3:#64748B;--g-raised:#fff;--g-brand:#3F6BFF}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--g-bg:rgba(20,24,33,.78);--g-line:#262C38;--g-ink:#E8ECF3;--g-ink2:#C3CAD6;--g-ink3:#97A1B2;--g-raised:#161A22;--g-brand:#6E8FFF}}
+:root[data-theme=dark]{--g-bg:rgba(20,24,33,.78);--g-line:#262C38;--g-ink:#E8ECF3;--g-ink2:#C3CAD6;--g-ink3:#97A1B2;--g-raised:#161A22;--g-brand:#6E8FFF}
+.gbar{position:relative;z-index:40;height:52px;display:flex;align-items:center;gap:16px;padding:0 22px;
+  background:var(--g-bg);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--g-line)}
+.gbrand{display:flex;align-items:center;gap:10px;min-width:0}
+.gbrand img,.gbrand .gmark{width:26px;height:26px;border-radius:6px;flex:none;object-fit:contain}
+.gbrand .gmark{display:grid;place-items:center;background:var(--g-brand);color:#fff}
+.gbrand .gmark .ic{width:16px;height:16px;stroke:currentColor}
+.gbrand img[hidden],.gback[hidden]{display:none}
+.gbrand span{color:var(--g-ink);font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.gback{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;color:var(--g-ink3);font-size:13px;transition:opacity .15s}
+.gback:hover{opacity:.7}
+.gback .ic,.gpill .ic{width:14px;height:14px}
+#guser{position:relative}
+.gpill{display:inline-flex;align-items:center;gap:6px;background:var(--g-raised);border:1px solid rgba(15,23,42,.10);border-radius:999px;
+  padding:3px 8px 3px 3px;cursor:pointer;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+.gpill .ic{color:var(--g-ink3)}
+.gav{width:26px;height:26px;border-radius:50%;flex:none;display:inline-grid;place-items:center;background:var(--g-brand);color:#fff;
+  font-size:11px;font-weight:700;object-fit:cover}
+.gname{font-size:13px;font-weight:600;color:var(--g-ink);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gmenu{position:absolute;top:calc(100% + 8px);right:0;width:200px;display:grid;padding:6px;z-index:60;background:var(--g-raised);
+  border:1px solid rgba(15,23,42,.10);border-radius:16px;box-shadow:0 16px 44px -12px rgba(15,23,42,.28)}
+.gmenu[hidden]{display:none}
+.gmenu a,.gmenu button{display:flex;align-items:center;padding:8px 10px;border-radius:9px;font-size:13.5px;color:var(--g-ink2);
+  border:0;background:none;cursor:pointer;text-align:left}
+.gmenu a:hover,.gmenu button:hover{background:color-mix(in srgb,var(--g-brand) 8%,transparent)}
+.gmenu .danger{color:#DC2626}
+.glogin{color:var(--g-brand);font-weight:600;font-size:13.5px;padding:6px 12px;border-radius:999px;
+  background:color-mix(in srgb,var(--g-brand) 8%,transparent)}
+@media (max-width:640px){.gbar{padding:0 14px}.gback,.gname{display:none}}
+@media (max-width:860px){.shell.open .scrim{display:block;position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.4)}}
+</style>
+</head>
+<body>
+<header class=gbar>
+  <a class=gbrand id=gbrand href="#/">
+    <i class=gmark id=gmark><svg class=ic viewBox="0 0 24 24"><path d="M3 12h3l3-8 4 16 3-8h5"/></svg></i>
+    <img id=glogo alt="" width=26 height=26 hidden><span id=gtitle>直播间监控</span>
+  </a>
+  <div class=gright>
+    <a class=gback id=gback href="#/" hidden><svg class=ic viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>返回首页</a>
+    <div id=guser></div>
+  </div>
+</header>
+<div class=shell id=shell>
+  <aside class=side id=side>
+    <nav class=nav id=nav></nav>
+    <div class=side-ft id=sideft></div>
+  </aside>
+  <div class=scrim data-act=menu></div>
+  <div class=stage>
+    <header class=bar>
+      <button class="iconbtn menu-btn" data-act=menu aria-label="菜单"></button>
+      <div class=crumb id=crumb></div>
+      <button class=search data-act=palette id=searchbtn></button>
+      <div class=stats id=stats></div>
+      <button class=iconbtn data-act=theme id=themebtn aria-label="切换主题"></button>
+    </header>
+    <main id=main tabindex=-1><div class=page><div class="skel" style="height:140px"></div></div></main>
+  </div>
+</div>
+<div class=progress id=progress></div>
+<div id=toasts></div>
+<script>
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const SITE=(()=>{try{return JSON.parse($('meta[name=site]')?.content||'{}')}catch{return {}}})();
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const ESC={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>ESC[c]);
+class Raw{constructor(s){this.s=s}toString(){return this.s}}
+const raw=s=>new Raw(s==null?'':String(s));
+const put=v=>v==null||v===false?'':v instanceof Raw?v.s:Array.isArray(v)?v.map(put).join(''):esc(v);
+function html(str,...vals){let o=str[0];for(let i=0;i<vals.length;i++)o+=put(vals[i])+str[i+1];return new Raw(o)}
+
+const pad=(n,w=2)=>String(n).padStart(w,'0');
+const mmss=s=>{s=Math.max(0,Math.floor(s||0));return pad(Math.floor(s/60))+':'+pad(s%60)};
+const dur=s=>{s=Math.floor(s||0);if(!s)return '—';const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+' 小时 '+m+' 分':m+' 分钟'};
+const durS=s=>{s=Math.floor(s||0);if(!s)return '—';const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h'+pad(m)+'m':m+'m'};
+const num=n=>n==null||n===''?'—':typeof n!=='number'?String(n):Math.abs(n)>=1e4?(n/1e4).toFixed(Math.abs(n)>=1e5?0:1)+'万':n.toLocaleString('zh-CN');
+const r1=v=>Math.round(v*10)/10;
+const when=st=>!st||st.length<13?(st||''):st.slice(4,6)+'-'+st.slice(6,8)+' '+st.slice(9,11)+':'+st.slice(11,13);
+const dayOf=st=>st&&st.length>=8?st.slice(0,4)+'-'+st.slice(4,6)+'-'+st.slice(6,8):'';
+const hue=s=>{let h=7;for(const c of String(s))h=(h*31+c.codePointAt(0))%360;return h};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const scoreC=v=>v==null?'var(--dim)':v>=8?'var(--ok)':v>=6?'var(--acc)':v>=4?'var(--warn)':'var(--bad)';
+const DIMN={product:'产品力',sales:'销售力',interact:'互动力',risk:'违规风险'};
+const DIMC={product:'var(--c-p)',sales:'var(--c-s)',interact:'var(--c-i)',risk:'var(--c-r)'};
+const GRP={own:'我方',benchmark:'标杆',unknown:'未登记'};
+const grpPill=g=>html`<span class="pill ${g==='own'?'own':g==='benchmark'?'bm':''}">${GRP[g]||g||'—'}</span>`;
+const Pref={
+  get(k,d){try{const v=localStorage.getItem('lc2.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('lc2.'+k,JSON.stringify(v))}catch(e){}}};
+function nearest(arr,t){if(!arr||!arr.length)return t;let lo=0,hi=arr.length-1;
+  while(lo<hi){const m=(lo+hi)>>1;if(arr[m]<t)lo=m+1;else hi=m}
+  return lo>0&&Math.abs(arr[lo-1]-t)<=Math.abs(arr[lo]-t)?arr[lo-1]:arr[lo]}
+const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
+const MODK=/Mac|iP(hone|ad|od)/.test(navigator.platform||navigator.userAgent)?'⌘K':'Ctrl K';
+const CLEAN=[];   // 视图挂的 ResizeObserver 等，换页前统一拆掉
+
+const ICONS={
+  grid:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
+  target:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  versus:'M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4',
+  trophy:'M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0z',
+  book:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+  eye:'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  wave:'M22 12h-4l-3 9L9 3l-3 9H2',
+  user:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  send:'M22 2 11 13M22 2l-7 20-4-9-9-4z',
+  file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8',
+  search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',
+  sun:'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4',
+  moon:'M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z',
+  auto:'M20 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 21h8M12 17v4',
+  menu:'M3 6h18M3 12h18M3 18h18',
+  x:'M18 6 6 18M6 6l12 12',
+  left:'M15 18l-6-6 6-6',right:'M9 18l6-6-6-6',
+  ext:'M7 17 17 7M7 7h10v10',
+  copy:'M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zM5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1',
+  alert:'M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01',
+  spark:'M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z',
+  swap:'M7 16V4M7 4 3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4',
+  panel:'M3 3h18v18H3zM9 3v18',
+  key:'M2 6h20v12H2zM6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10',
+  image:'M3 3h18v18H3zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 15l-5-5L5 21',
+  msg:'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',
+  clock:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2',
+  live:'M16.2 7.8a6 6 0 0 1 0 8.5M7.8 16.2a6 6 0 0 1 0-8.5M19.1 4.9a10 10 0 0 1 0 14.2M4.9 19.1a10 10 0 0 1 0-14.2M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  check:'M20 6 9 17l-5-5',
+  arrow:'M5 12h14M12 5l7 7-7 7',
+  up:'M12 19V5M5 12l7-7 7 7',down:'M12 5v14M19 12l-7 7-7-7',
+  layers:'M12 2 2 7l10 5 10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+  refresh:'M23 4v6h-6M1 20v-6h6M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15',
+  mic:'M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4',
+  film:'M2 2h20v20H2zM7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5',
+  flag:'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7',
+};
+const icon=(n,c)=>raw('<svg class="ic'+(c?' '+c:'')+'" viewBox="0 0 24 24" aria-hidden="true"><path d="'+(ICONS[n]||'')+'"/></svg>');
+
+const STATIC=document.documentElement.dataset.static==='1';
+const API={
+  S:null,IDX:{},base:null,anchors:null,_m:new Map(),_fr:{},
+  async json(u){
+    const r=await fetch(u,{credentials:'same-origin',cache:STATIC?'default':'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status+' · '+u);
+    const t=await r.text();
+    if(t.trimStart().charAt(0)==='<'){console.error('期望 JSON，实际拿到 HTML：',u);throw new Error('BADPATH')}
+    return JSON.parse(t)},
+  memo(k,fn){if(!this._m.has(k))this._m.set(k,fn().catch(e=>{this._m.delete(k);throw e}));return this._m.get(k)},
+  _c:new Map(),
+  async api(q,fresh){
+    const u='/api?'+new URLSearchParams(Object.entries(q).filter(([,v])=>v!=null&&v!==''));
+    const hit=this._c.get(u);if(!fresh&&hit&&Date.now()-hit.t<2e4)return hit.d;
+    const d=await this.json(u);this._c.set(u,{t:Date.now(),d});this.absorb(d);return d},
+  absorb(d){if(d&&Array.isArray(d.tree))this.base={tree:d.tree,pending:d.pending||[],
+    list:d.all||[],total:d.total||{},generated_at:''}},
+  async boot(){
+    if(STATIC){
+      const S=this.S=await this.json('data.json');this.IDX=S.sessions||{};
+      this.base={tree:S.tree||[],pending:S.pending||[],list:S.session_list||[],
+        total:S.total||{},generated_at:S.generated_at||''};
+      this.anchors=S.anchor_list||[];
+    }else await this.api({view:'board'},1);
+  },
+  async poll(){if(STATIC)return false;const a=JSON.stringify(this.base.tree);
+    await this.api({view:'board'},1);return JSON.stringify(this.base.tree)!==a},
+  room(p){return (this.base.tree||[]).find(r=>r.sessions.some(s=>s.path===p))||null},
+  meta(p){
+    if(this.IDX[p])return this.IDX[p];
+    const r=this.room(p);
+    if(r){const s=r.sessions.find(s=>s.path===p);return {...s,name:r.name,category:r.category,group:r.group,room:r.room}}
+    return (this.base.list||[]).find(s=>s.path===p)||null},
+  latest(r,analyzedOnly){const ss=(r.sessions||[]).filter(s=>!analyzedOnly||s.analyzed);
+    return ss.reduce((a,b)=>!a||b.started>a.started?b:a,null)},
+  frame(p,sec){
+    if(!p)return '';
+    if(!STATIC)return '/frame?p='+encodeURIComponent(p)+'&s='+Math.round(sec);
+    const s=this.IDX[p],arr=s&&s.frame_secs;
+    return arr&&arr.length?p+'/thumbs/'+pad(nearest(arr,sec),6)+'.jpg':''},
+  frameExact(p,sec){return STATIC?p+'/thumbs/'+pad(sec,6)+'.jpg':'/frame?p='+encodeURIComponent(p)+'&s='+sec},
+  framesNow(p){return STATIC?((this.IDX[p]&&this.IDX[p].frame_secs)||[]):(this._fr[p]||null)},
+  async frames(p){
+    if(STATIC)return this.framesNow(p);
+    return this.memo('fr:'+p,()=>this.json('/frames?p='+encodeURIComponent(p)).then(d=>(this._fr[p]=d.secs||[])))},
+  report(p){return STATIC?p+'/report.html':'/report?p='+encodeURIComponent(p)},
+  docIdx:null,
+  async docsIndex(){
+    const d=await this.memo('docs',()=>this.json(STATIC?'docs/index.json':'/docs?json=1'));
+    this.docIdx=d;return d},
+  _docRel(it){return it.key==='health'?'health':it.key+'/'+it.file},
+  docRaw(it){
+    if(!STATIC)return '/docs?f='+encodeURIComponent(this._docRel(it))+'&raw=1';
+    return 'docs/raw/'+encodeURIComponent(it.key==='health'?'health.txt':it.key+'_'+it.file)},
+  docPage(it){
+    if(!STATIC)return '/docs?f='+encodeURIComponent(this._docRel(it));
+    return 'docs/'+encodeURIComponent(it.key==='health'?'health.html':it.kind==='md'?it.key+'_'+it.name+'.html':it.key+'_'+it.file)},
+  async text(u){
+    const r=await fetch(u,{credentials:'same-origin',cache:STATIC?'default':'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status+' · '+u);
+    const t=await r.text();
+    if(/^\s*<!doctype html/i.test(t)){console.error('期望原文，实际拿到 HTML：',u);throw new Error('BADPATH')}
+    return t},
+
+  async session(p){
+    if(STATIC)return this.memo('s:'+p,()=>this.json('sessiondata/'+p.replace(/\//g,'_')+'.json'));
+    const d=await this.api({view:'session',p});const s=d.detail;
+    if(s&&s.frame_secs==null)s.frame_secs=await this.frames(p).catch(()=>[]);
+    return s},
+  async target(p){
+    if(STATIC){const ss=this.S.target_sessions||[];p=p||(ss[0]&&ss[0].path);
+      return {sessions:ss,path:p,T:p?((this.S.targets||{})[p]||null):null}}
+    const d=await this.api({view:'target',p}),ss=d.target_sessions||[];
+    return {sessions:ss,path:p||(d.target&&d.target.path)||(ss[0]&&ss[0].path),T:d.target||null}},
+  async compare(a,b){
+    if(STATIC)return cmpStatic(a,b);
+    return (await this.api({view:'compare',a,b})).compare},
+  async bench(cat){
+    if(STATIC){const cats=this.S.bench_cats||[];cat=cat||(cats[0]&&cats[0].category);
+      return {cats,cat,b:cat?((this.S.benches||{})[cat]||benchOf(cat)):null}}
+    const d=await this.api({view:'bench',cat});
+    return {cats:d.bench_cats||[],cat:(d.bench&&d.bench.category)||cat,b:d.bench}},
+  async method(cat){
+    if(STATIC){const cats=this.S.method_cats||[];cat=cat||(cats[0]&&cats[0].category);
+      return {cats,cat,m:(this.S.methods||{})[cat]||null,pb:(this.S.playbooks||{})[cat]||null}}
+    const d=await this.api({view:'method',cat}),cats=d.method_cats||[];
+    return {cats,cat:cat||(d.method&&d.method.category)||(cats[0]&&cats[0].category),m:d.method,pb:d.playbook}},
+  async visual(cat,grp){
+    if(STATIC){const cats=this.S.visual_cats||[];cat=cat||(cats[0]&&cats[0].category);
+      return {cats,cat,V:(this.S.visuals||{})[cat]||null,B:null,O:null,grpOk:false}}
+    const d=await this.api({view:'visual',cat,grp});
+    return {cats:d.visual_cats||[],cat:(d.visual&&d.visual.category)||cat,V:d.visual,
+      B:d.visual_bench,O:d.visual_own,grpOk:true}},
+  async talk(cat,grp){
+    if(STATIC)return {cats:this.S.talk_cats||[],T:talkOf(cat,grp),all:this.S.talk_all_rows||[]};
+    const d=await this.api({view:'talk',tcat:cat,tgrp:grp});
+    return {cats:d.talk_cats||[],T:d.talk,all:d.talk_all||[]}},
+  async anchor(name){
+    if(STATIC){const l=this.anchors;name=name||(l[0]&&l[0].name);
+      return {list:l,name,A:name?((this.S.anchor_sel||{})[name]||null):null}}
+    const d=await this.api({view:'anchor',an:name});this.anchors=d.anchor_list||[];
+    return {list:this.anchors,name:name||(d.anchor&&d.anchor.name)||(this.anchors[0]&&this.anchors[0].name),A:d.anchor||null}},
+  ask(path,method,payload){
+    if(!SITE.ask_api)return Promise.reject(new Error('没有配置提需求接口（config/site.json 的 ask_api）'));
+    const opt={method:method||'GET',credentials:'include',headers:{'Content-Type':'application/json'}};
+    if(payload)opt.body=JSON.stringify(payload);
+    return fetch(SITE.ask_api+path,opt).then(async r=>{
+      if(!r.ok)throw new Error((await r.text()).slice(0,200)||('HTTP '+r.status));
+      return r.status===204?{}:r.json()})},
+};
+
+function cmpStatic(aPath,bPath){
+  const S=API.S,A=API.IDX[aPath],B=API.IDX[bPath];
+  if(!A||!B)return {error:'场次不存在'};
+  const ta=A.tag_count||{},tb=B.tag_count||{};
+  const dims=(S.dims_order||[]).map(d=>{
+    const ua=d.tags.filter(t=>ta[d.key+'.'+t]).length,ub=d.tags.filter(t=>tb[d.key+'.'+t]).length;
+    return {dim:d.key,name:d.name,total:d.tags.length,a:ua,b:ub,gap:ua-ub}});
+  const missing=Object.keys(tb).sort((x,y)=>tb[y]-tb[x])
+    .filter(k=>!k.startsWith('risk.')&&!ta[k])
+    .map(k=>({key:k,name:S.tag_names[k]||k,dim:k.split('.')[0],bench_n:tb[k],examples:(B.evidence||{})[k]||[]}));
+  const names={};for(const l of (S.session_list||[]))names[l.path]=l.name;
+  return {a:{name:names[aPath]||aPath,path:aPath,group:A.group,started:A.started},
+    b:{name:names[bPath]||bPath,path:bPath,group:B.group,started:B.started},
+    dims,missing:missing.slice(0,12),
+    extra:Object.keys(ta).filter(k=>!tb[k]&&!k.startsWith('risk.')).map(k=>({name:S.tag_names[k]||k,n:ta[k]})).slice(0,8),
+    metrics:(S.core||[]).map(c=>{const va=A.metrics[c.key],vb=B.metrics[c.key];
+      if(typeof va!=='number'||typeof vb!=='number')return null;
+      const diff=va-vb,pct=vb?Math.round(diff/vb*100):0;
+      return {name:c.name,unit:c.unit,a:va,b:vb,diff:r1(diff),pct,good:c.hi===null?null:(c.hi?diff>=0:diff<=0)}}).filter(Boolean)}}
+function benchOf(cat){
+  const S=API.S,all=(S.bench_sessions||[]).filter(x=>x.category===cat);
+  const ans=all.map(x=>API.IDX[x.path]).filter(Boolean);
+  if(!ans.length)return {category:cat||'',n:0,metrics:[],tags:[],reliable:false};
+  const metrics=[];
+  for(const c of (S.core||[])){
+    const v=ans.map(a=>a.metrics[c.key]).filter(x=>typeof x==='number').sort((a,b)=>a-b);
+    if(!v.length)continue;
+    metrics.push({key:c.key,name:c.name,unit:c.unit,n:v.length,min:r1(v[0]),max:r1(v[v.length-1]),
+      median:r1(v[Math.floor((v.length-1)/2)]),p75:r1(v[Math.floor(v.length*.75)])})}
+  const tot={},seen={};
+  for(const a of ans)for(const k in (a.tag_count||{})){tot[k]=(tot[k]||0)+a.tag_count[k];seen[k]=(seen[k]||0)+1}
+  const tags=Object.keys(tot).sort((x,y)=>tot[y]-tot[x]).slice(0,16).map(k=>({key:k,name:S.tag_names[k]||k,
+    total:tot[k],rooms:seen[k],rate:Math.round(seen[k]/ans.length*100)}));
+  return {category:cat,n:ans.length,reliable:ans.length>=15,metrics,tags,
+    sessions:all.map(x=>({name:x.name,started:x.started,path:x.path,elapsed:x.elapsed,chars:x.chars}))}}
+function talkOf(cat,grp){
+  let rows=(API.S.talk_all_rows||[]).filter(r=>(!cat||r.category===cat)&&(!grp||r.group===grp));
+  let avg=null;
+  if(cat&&rows.length){const n=rows.length,m=k=>r1(rows.reduce((x,y)=>x+(y[k]||0),0)/n);
+    avg={product_pct:m('product_pct'),interact_pct:m('interact_pct'),push_pct:m('push_pct'),push_per_min:m('push_per_min')}}
+  return {category:cat||'',n:rows.length,rows,avg}}
+
+const PAGES=[
+  ['board','总览','grid','洞察'],['target','靶向诊断','target','洞察'],['compare','对标分析','versus','洞察'],
+  ['bench','标杆库','trophy','标准'],
+  ['talk','话术量化','wave','量化'],
+  ['anchor','主播分析','user','团队'],['ask','提需求','send','团队'],['docs','交付物','file','团队']]
+  .filter(p=>p[0]!=='ask'||SITE.ask_api);
+const VIEWS={};
+const R={view:'board',q:new URLSearchParams(),key:'',depth:0};
+function parseHash(){
+  const h=location.hash.replace(/^#\/?/,''),i=h.indexOf('?');
+  R.view=(i<0?h:h.slice(0,i))||'board';R.q=new URLSearchParams(i<0?'':h.slice(i+1))}
+function href(v,p){
+  const q=new URLSearchParams();
+  for(const k in (p||{})){const x=p[k];if(x!=null&&x!=='')q.set(k,x)}
+  const s=q.toString();return '#/'+v+(s?'?'+s:'')}
+function go(v,p,replace){
+  const h=href(v,p);
+  if(replace){history.replaceState(history.state,'',h);route()}
+  else if(location.hash===h)route();
+  else location.hash=h}
+function patch(p,replace=true){go(R.view,{...Object.fromEntries(R.q),...p},replace)}
+function stampDepth(){
+  const s=history.state;
+  if(s&&typeof s.i==='number')R.depth=s.i;
+  else{R.depth=R.depth+1;history.replaceState({...(s||{}),i:R.depth},'')}}
+if(!(history.state&&typeof history.state.i==='number'))history.replaceState({...(history.state||{}),i:0},'');
+R.depth=history.state.i;
+window.addEventListener('hashchange',()=>{stampDepth();route()});
+
+let SEQ=0;
+async function route(){
+  parseHash();
+  const my=++SEQ,V=VIEWS[R.view]?R.view:'board';
+  const key=V+'|'+(R.q.get('p')||'')+'|'+(R.q.get('n')||'')+'|'+(R.q.get('f')||'');
+  if(!R.quiet)$('#shell').classList.remove('open');
+  if(OV.stack.length&&OV.stack.at(-1).routeClose)closeOv();
+  const g0=galN;
+  progress(1);
+  let out;
+  try{out=await VIEWS[V](R.q)}catch(e){console.error(e);out=errView(e)}
+  progress(0);
+  if(my!==SEQ)return;
+  if(out&&out.redirect){go(...out.redirect,true);return}
+  const main=$('#main'),reset=key!==R.key,quiet=!!R.quiet;R.key=key;R.quiet=false;
+  const apply=()=>{
+    CLEAN.splice(0).forEach(f=>{try{f()}catch(e){}});
+    for(const k of [...GAL.keys()])if(Number(k.slice(1))<=g0)GAL.delete(k);
+    navRender(V==='s'?'board':V==='doc'?'docs':V);
+    crumbRender(V,out);
+    main.classList.toggle('quiet',quiet);
+    main.innerHTML=put(out.html!=null?out.html:out);
+    if(reset)main.scrollTop=0;
+    document.title=(out.title?out.title+' · ':'')+'直播话术分析平台';
+    if(out.mount)try{out.mount(main)}catch(e){console.error(e)}};
+  const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(document.startViewTransition&&!calm&&!quiet&&!document.hidden)vt(apply);else apply();
+}
+let VT=null;
+function vt(fn){
+  if(VT)try{VT.skipTransition()}catch(e){}
+  const t=VT=document.startViewTransition(fn);
+  const q=()=>{};t.ready.catch(q);t.updateCallbackDone.catch(q);t.finished.catch(q).then(()=>{if(VT===t)VT=null})}
+function errView(e){
+  const bad=String(e&&e.message)==='BADPATH';
+  return {title:'出错了',html:html`<div class=page><div class="card"><div class=empty>${icon('alert')}
+    <div><b style="font-size:15px;color:var(--fg)">${bad?'数据没取到，链接可能不对':(STATIC?'数据文件读取失败':'本地分析服务没有响应')}</b>
+    <div style="margin-top:6px">${bad?'地址指向了不存在的文件（服务器回了一整页 HTML 而不是数据）':(STATIC?String(e&&e.message||e):'确认 dashboard.py 在跑：python scripts/install_services.py --status')}</div></div>
+    <button class=btn data-act=retry>${icon('refresh')}重试</button></div></div></div>`}}
+
+function navRender(v){
+  let h='',sec='';
+  PAGES.forEach((p,i)=>{
+    if(p[3]!==sec){sec=p[3];h+=put(html`<h6>${sec}</h6>`)}
+    h+=put(html`<a href="${'#/'+p[0]}" class="${v===p[0]?'on':''}" title="${p[1]}">${icon(p[2])}<span>${p[1]}</span>${i<9?html`<span class=k>${i+1}</span>`:''}</a>`)});
+  $('#nav').innerHTML=h}
+function sideFoot(){
+  $('#sideft').innerHTML=put(html`
+    <button data-act=help title="快捷键">${icon('key')}<span>快捷键</span></button>
+    <button data-act=mini title="收起侧栏">${icon('panel')}<span>收起侧栏</span></button>`)}
+function crumbRender(v,out){
+  const pg=PAGES.find(p=>p[0]===v);
+  $('#crumb').innerHTML=put(v==='s'?html`<a class=up href="#/board">总览</a><span class=sep>/</span><span class=cur>${out.title||'场次'}</span>`
+    :v==='doc'?html`<a class=up href="#/docs">交付物</a><span class=sep>/</span><span class=cur>${out.title||'文档'}</span>`
+    :html`<span class=cur>${pg?pg[1]:'总览'}</span>`)}
+function statsRender(){
+  const B=API.base,t=B.total||{},live=(B.tree||[]).filter(r=>r.recording).length;
+  const st=(l,v,c)=>html`<span class="st ${c||''}"><span>${l}</span><b>${v}</b></span>`;
+  $('#stats').innerHTML=put(html`${live?html`<span class=livepill style="margin-right:10px">${raw('<span class=dot></span>')}${live} 间在播</span>`:''}
+    ${st('直播间',(B.tree||[]).length,'hide1')}${st('场次',num(t.sessions))}${st('已分析',num(t.analyzed))}${st('弹幕',num(t.danmu),'hide1')}
+    <span class="st t">${B.generated_at?B.generated_at.slice(5,16)+' 数据':(STATIC?'':'实时')}</span>`)}
+const THEMES=['auto','light','dark'];
+function applyTheme(t){
+  if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;
+  const b=$('#themebtn');if(b){b.innerHTML=put(icon(t==='auto'?'auto':t==='dark'?'moon':'sun'));
+    b.title='主题：'+({auto:'跟随系统',light:'浅色',dark:'深色'})[t]+'（T 切换）'}}
+function cycleTheme(){
+  const t=THEMES[(THEMES.indexOf(Pref.get('theme','auto'))+1)%3];Pref.set('theme',t);
+  const run=()=>applyTheme(t);
+  if(document.startViewTransition&&!document.hidden)vt(run);else run();
+  toast('主题：'+({auto:'跟随系统',light:'浅色',dark:'深色'})[t],t==='dark'?'moon':t==='light'?'sun':'auto')}
+let progT;
+function progress(on){
+  const p=$('#progress');clearTimeout(progT);
+  if(on){p.classList.add('on');p.style.width='0';requestAnimationFrame(()=>{p.style.width='70%'})}
+  else{p.style.width='100%';progT=setTimeout(()=>{p.classList.remove('on');p.style.width='0'},300)}}
+function toast(msg,ic){
+  const t=document.createElement('div');t.className='toast';t.innerHTML=put(html`${icon(ic||'check')}${msg}`);
+  $('#toasts').appendChild(t);setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),320)},2200)}
+
+const OV={stack:[]};
+function openOv(cls,inner,opt){
+  const el=document.createElement('div');el.className='ov '+(cls||'');el.innerHTML=put(inner);
+  document.body.appendChild(el);
+  const o={el,...(opt||{})};OV.stack.push(o);
+  el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-act=ovclose]'))closeOv(o)});
+  return o}
+function closeOv(o){
+  o=o||OV.stack.at(-1);if(!o)return;
+  const i=OV.stack.indexOf(o);if(i<0)return;OV.stack.splice(i,1);
+  o.el.classList.add('closing');setTimeout(()=>o.el.remove(),190);
+  if(o.onClose)o.onClose()}
+
+const GAL=new Map();let galN=0;
+function gal(items){const id='g'+(++galN);GAL.set(id,items);return id}
+function lightbox(items,i){
+  if(!items||!items.length)return;
+  let k=i||0;
+  const o=openOv('lb',html`<button class="iconbtn cl" data-act=ovclose aria-label="关闭">${icon('x')}</button>
+    <img class=main alt="">
+    <div class=cap></div>
+    ${items.length>1&&items.length<=200?html`<div class=film>${items.map((x,j)=>html`<button data-j="${j}"><img loading=lazy src="${x.src}" alt=""></button>`)}</div>`:''}
+    ${items.length>1?html`<button class="nv p" data-nv="-1" aria-label="上一张">${icon('left')}</button><button class="nv n" data-nv="1" aria-label="下一张">${icon('right')}</button>`:''}`,
+    {onKey:e=>{if(e.key==='ArrowLeft')show(k-1);else if(e.key==='ArrowRight')show(k+1);else return false;return true}});
+  function show(j){
+    k=(j+items.length)%items.length;const it=items[k];
+    $('img.main',o.el).src=it.src;
+    $('.cap',o.el).innerHTML=put(html`${it.cap||''}<small>${k+1} / ${items.length}${it.sub?' · '+it.sub:''}</small>`);
+    $$('.film button',o.el).forEach((b,x)=>{b.classList.toggle('on',x===k);if(x===k)b.scrollIntoView({inline:'center',block:'nearest'})})}
+  o.el.addEventListener('click',e=>{
+    const b=e.target.closest('[data-nv]');if(b){show(k+Number(b.dataset.nv));return}
+    const f=e.target.closest('[data-j]');if(f)show(Number(f.dataset.j))});
+  let sx=null;   // 触屏左右滑
+  o.el.addEventListener('pointerdown',e=>{sx=e.clientX});
+  o.el.addEventListener('pointerup',e=>{if(sx!=null&&Math.abs(e.clientX-sx)>50)show(k+(e.clientX<sx?1:-1));sx=null});
+  show(k)}
+function drawer(title,sub,body,mount){
+  const o=openOv('drw',html`<div class=pnl role=dialog aria-label="${title}"><div class=hd><div><h3>${title}</h3>${sub?html`<div class=muted style="font-size:12px;margin-top:2px">${sub}</div>`:''}</div>
+    <button class="iconbtn r" data-act=ovclose aria-label="关闭">${icon('x')}</button></div><div class=bd>${body}</div></div>`,{routeClose:true});
+  if(mount)mount(o.el);return o}
+function help(){
+  const k=(a,b)=>html`<div><span>${b}</span><span>${a.split(' ').map(x=>html`<span class=kbd>${x}</span>`)}</span></div>`;
+  openOv('',html`<div class=help><h3>快捷键</h3>
+    ${k(MODK+' /','搜索直播间、主播、品类、页面')}${k('1 … 9','切换页面')}${k('T','切换浅色 / 深色 / 跟随系统')}
+    ${k('Esc','关闭浮层 / 从场次页返回')}${k('← →','灯箱里翻图')}${k('?','显示这张卡')}</div>`)}
+
+function palIndex(){
+  const B=API.base,out=[];
+  PAGES.forEach(p=>out.push({g:'页面',t:p[1],s:p[3],ic:p[2],h:'#/'+p[0]}));
+  for(const g of (API.docIdx||[]))for(const it of g.items)
+    out.push(it.kind==='html'?{g:'交付物',t:it.name,s:g.title,ic:'file',h:API.docPage(it),ext:1}
+      :{g:'交付物',t:it.name,s:g.title+(it.meta?' · '+it.meta:''),ic:it.key==='drill'?'flag':it.key==='health'?'check':'msg',h:href('doc',{k:it.key,f:it.file})});
+  for(const r of (B.tree||[])){
+    const s=API.latest(r,true)||API.latest(r);if(!s)continue;
+    out.push({g:'直播间',t:r.name,s:[r.category,GRP[r.group],r.sessions.length+' 场',r.recording?'直播中':''].filter(Boolean).join(' · '),
+      ic:r.recording?'live':'film',h:href('s',{p:s.path}),live:r.recording})}
+  for(const a of (API.anchors||[]))
+    out.push({g:'主播',t:a.name,s:((a.rooms||[])[0]||'')+' · 上播 '+a.n_dates+' 天',ic:'user',h:href('anchor',{n:a.name})});
+  const cats=[...new Set((B.tree||[]).map(r=>r.category).filter(Boolean))];
+  for(const c of cats){
+    out.push({g:'品类',t:c,s:'方法论',ic:'book',h:href('method',{c})});
+    out.push({g:'品类',t:c,s:'标杆库',ic:'trophy',h:href('bench',{c})})}
+  return out}
+function fuzzy(text,q){
+  const t=text.toLowerCase(),i=t.indexOf(q);
+  if(i>=0)return {s:200-i-t.length*.2,a:i,b:i+q.length};
+  let j=0,gap=0,st=-1;
+  for(let x=0;x<t.length&&j<q.length;x++){if(t[x]===q[j]){if(st<0)st=x;j++}else if(st>=0)gap++}
+  return j===q.length?{s:60-gap,a:-1}:null}
+function palette(){
+  if(OV.stack.some(o=>o.pal))return;
+  const all=palIndex();let sel=0,shown=[];
+  const o=openOv('',html`<div class=pal role=dialog aria-label="搜索"><div class=in>${icon('search')}
+    <input placeholder="搜索直播间、主播、品类、页面…" autocomplete=off spellcheck=false aria-label="搜索"><span class=kbd>Esc</span></div>
+    <div class=res role=listbox></div>
+    <div class=ft><span><span class=kbd>↑</span><span class=kbd>↓</span>选择</span><span><span class=kbd>↵</span>打开</span><span style="margin-left:auto"><span class=kbd>${MODK}</span>随时唤起</span></div></div>`,
+    {pal:1,onKey:e=>{
+      if(e.key==='ArrowDown'){mv(1);return true}
+      if(e.key==='ArrowUp'){mv(-1);return true}
+      if(e.key==='Enter'){pick(shown[sel]);return true}
+      return false}});
+  const inp=$('input',o.el),res=$('.res',o.el);
+  const recent=Pref.get('recent',[]);
+  function draw(){
+    const q=inp.value.trim().toLowerCase();
+    if(!q){
+      const rec=recent.map(h=>all.find(x=>x.h===h)).filter(Boolean).map(x=>({...x,g:'最近'}));
+      const live=all.filter(x=>x.live).map(x=>({...x,g:'正在直播'}));
+      shown=[...rec,...live,...all.filter(x=>x.g==='页面')].slice(0,30);
+    }else{
+      shown=all.map(x=>{const m=fuzzy(x.t+' '+x.s,q);return m?{...x,m,sc:m.s+(x.g==='直播间'?8:x.g==='页面'?6:0)}:null})
+        .filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,40)}
+    sel=Math.min(sel,Math.max(0,shown.length-1));
+    let g='',h='';
+    shown.forEach((x,i)=>{
+      if(x.g!==g){g=x.g;h+=put(html`<div class=grp>${g}</div>`)}
+      const t=x.m&&x.m.a>=0&&x.m.b<=x.t.length?html`${x.t.slice(0,x.m.a)}<mark>${x.t.slice(x.m.a,x.m.b)}</mark>${x.t.slice(x.m.b)}`:x.t;
+      h+=put(html`<div class="it ${i===sel?'on':''}" data-i="${i}" role=option><span class=bx>${icon(x.ic)}</span><div style="min-width:0"><b>${t}</b><small>${x.s}</small></div><span class=go>${x.ext?'新页面':'↵'}</span></div>`)});
+    res.innerHTML=h||put(html`<div class="empty sm">没找到「${inp.value}」</div>`)}
+  function mv(d){if(!shown.length)return;sel=(sel+d+shown.length)%shown.length;
+    $$('.it',res).forEach(e=>e.classList.toggle('on',Number(e.dataset.i)===sel));
+    const on=$('.it.on',res);if(on)on.scrollIntoView({block:'nearest'})}
+  function pick(x){if(!x)return;
+    Pref.set('recent',[x.h,...recent.filter(h=>h!==x.h)].slice(0,5));
+    closeOv(o);if(x.ext)location.href=x.h;else location.hash=x.h.slice(1)}
+  inp.addEventListener('input',()=>{sel=0;draw()});
+  res.addEventListener('mousemove',e=>{const it=e.target.closest('.it');if(it&&Number(it.dataset.i)!==sel){sel=Number(it.dataset.i);mv(0)}});
+  res.addEventListener('click',e=>{const it=e.target.closest('.it');if(it)pick(shown[Number(it.dataset.i)])});
+  draw();setTimeout(()=>inp.focus(),20)}
+
+const ACT={},CHG={},INP={};
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');if(!a)return;
+  const f=ACT[a.dataset.act];if(!f)return;
+  if(a.tagName==='A'||a.tagName==='BUTTON')e.preventDefault();
+  f(a,e)});
+document.addEventListener('change',e=>{const a=e.target.closest('[data-chg]');if(a&&CHG[a.dataset.chg])CHG[a.dataset.chg](a,e)});
+document.addEventListener('input',e=>{const a=e.target.closest('[data-inp]');if(a&&INP[a.dataset.inp])INP[a.dataset.inp](a,e)});
+
+(function gbar(){
+  const S=SITE,base=S.platform_base||'';
+  if(S.brand)$('#gtitle').textContent=S.brand;
+  if(S.logo){const i=$('#glogo');i.src=S.logo;i.alt=S.org||'';i.hidden=false;$('#gmark').remove()}
+  const onP=!!base&&location.pathname.startsWith(base);   // 页面挂在主站路径下
+  const home=onP?base:(S.home||'');
+  if(!home)return;
+  $('#gbrand').href=home;$('#gbrand').title='回到'+(S.org||'首页');
+  const b=$('#gback');b.href=home;b.hidden=false;
+  if(!onP||!S.user_api)return;
+  const box=$('#guser');
+  const api=p=>fetch(S.user_api+p,{credentials:'include'}).then(r=>r.ok?r.json():Promise.reject(r.status));
+  api('/me').then(me=>{
+    if(!me||me.source==='guest'||me.id==='guest'){box.innerHTML=put(html`<a class=glogin href="${base}login">登录 / 注册</a>`);return}
+    const draw=lv=>{
+      const name=(lv&&lv.display_name)||me.name||'我',av=lv&&lv.avatar_url;
+      const face=av?html`<img class=gav src="${av}" alt="">`:html`<span class=gav>${name.trim().charAt(0)||'我'}</span>`;
+      box.innerHTML=put(html`<button class=gpill data-act=gusermenu aria-haspopup=true aria-expanded=false aria-label="用户菜单：${name}">${face}<span class=gname>${name}</span><svg class=ic viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class=gmenu hidden><a href="${base}me/profile">个人后台</a>${me.is_admin?html`<a href="${base}admin">管理后台</a>`:''}<a href="${base}change-password">修改密码</a><button class=danger data-act=glogout>退出登录</button></div>`)};
+    draw(null);
+    api('/me/level').then(draw).catch(()=>{});
+  }).catch(()=>{});    // 取不到身份就不画头像：页面本身在 nginx 登录墙后面，不影响使用
+})();
+const gmenuClose=()=>{const m=$('#guser .gmenu');if(m&&!m.hidden){m.hidden=true;$('#guser .gpill').setAttribute('aria-expanded','false')}};
+ACT.gusermenu=a=>{const m=a.nextElementSibling,open=m.hidden;m.hidden=!open;a.setAttribute('aria-expanded',String(open))};
+ACT.glogout=()=>{fetch(SITE.user_api+'/auth/logout',{method:'POST',credentials:'include'}).finally(()=>{location.href=(SITE.platform_base||'/')+'login'})};
+document.addEventListener('click',e=>{if(!e.target.closest('#guser'))gmenuClose()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')gmenuClose()});
+document.addEventListener('error',e=>{const t=e.target;if(t&&t.tagName==='IMG')t.classList.add('broken')},true);
+document.addEventListener('keydown',e=>{
+  const top=OV.stack.at(-1);
+  if(top){
+    if(e.key==='Escape'){e.preventDefault();closeOv(top);return}
+    if(top.onKey&&top.onKey(e))e.preventDefault();
+    return}
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||e.target.isContentEditable;
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();palette();return}
+  if(typing){if(e.key==='Escape')e.target.blur();return}
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.key==='/'){e.preventDefault();palette()}
+  else if(e.key==='?')help();
+  else if(e.key==='Escape'&&R.view==='s')ACT.back();
+  else if(e.key==='t'||e.key==='T')cycleTheme();
+  else if(/^[1-9]$/.test(e.key)){const p=PAGES[Number(e.key)-1];if(p)go(p[0])}});
+
+ACT.palette=()=>palette();
+ACT.help=()=>help();
+ACT.theme=()=>cycleTheme();
+ACT.retry=()=>{API._m.clear();route()};
+ACT.menu=()=>$('#shell').classList.toggle('open');
+ACT.mini=()=>{const on=!$('#shell').classList.contains('mini');Pref.set('mini',on);
+  const run=()=>$('#shell').classList.toggle('mini',on);
+  if(document.startViewTransition&&!document.hidden)vt(run);else run()};
+ACT.back=()=>{if(R.depth>0)history.back();else go(R.view==='doc'?'docs':'board')};
+ACT.lb=a=>lightbox(GAL.get(a.dataset.g),Number(a.dataset.i||0));
+ACT.copy=a=>{
+  const t=a.dataset.text||'';
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(
+    ()=>toast('已复制到剪贴板'),()=>{toast('浏览器不让复制，请手动选中','alert')})};
+CHG.q=a=>patch({[a.dataset.k]:a.value});
+
+function ring(v,max,o){
+  o=o||{};const size=o.size||120,sw=o.sw||10,r=(size-sw)/2,c=2*Math.PI*r;
+  const f=v==null?0:clamp(v/max,0,1),col=o.color||scoreC(v);
+  return html`<div class=ring style="width:${size}px;height:${size}px;--fs:${o.fs||Math.round(size/4)}px">
+    <svg viewBox="0 0 ${size} ${size}"><circle class=ring-t cx="${size/2}" cy="${size/2}" r="${r}" style="stroke-width:${sw}"/>
+    <circle class=ring-v cx="${size/2}" cy="${size/2}" r="${r}" transform="rotate(-90 ${size/2} ${size/2})"
+      style="stroke:${col};stroke-width:${sw};stroke-dasharray:${c.toFixed(1)};--c:${c.toFixed(1)};--o:${(c*(1-f)).toFixed(1)}"/></svg>
+    <div class=ring-l><b style="color:${col}">${v==null?'—':v}</b>${o.sub?html`<small>${o.sub}</small>`:''}</div></div>`}
+function radar(axes,series,o){
+  o=o||{};const size=o.size||280,max=o.max||10,n=axes.length,cx=size/2,cy=size/2,R=size/2-(o.pad||46);
+  if(n<3)return '';
+  const pt=(i,f)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(a)*R*f,cy+Math.sin(a)*R*f]};
+  const poly=f=>axes.map((_,i)=>pt(i,f).map(x=>x.toFixed(1)).join(',')).join(' ');
+  let g='';
+  [.25,.5,.75,1].forEach(f=>{g+='<polygon class="gd'+(f===1?' o':'')+'" points="'+poly(f)+'"/>'});
+  axes.forEach((_,i)=>{const[x,y]=pt(i,1);g+='<line class=ax x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'"/>'});
+  axes.forEach((a,i)=>{const[x,y]=pt(i,1.2);const anc=Math.abs(x-cx)<8?'middle':x<cx?'end':'start';
+    g+='<text x="'+x.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="'+anc+'">'+esc(a)+'</text>'});
+  series.forEach((s,k)=>{
+    const ps=s.vals.map((v,i)=>pt(i,clamp((v||0)/max,0,1)));
+    g+='<g class=sr style="animation-delay:'+(k*120)+'ms"><polygon points="'+ps.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')+
+      '" style="fill:'+s.color+';fill-opacity:'+(s.fill!=null?s.fill:.16)+';stroke:'+s.color+';stroke-width:2;stroke-linejoin:round'+(s.dash?';stroke-dasharray:4 4':'')+'"/>';
+    ps.forEach((p,i)=>{g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(s.dash?2.5:3.5)+'" style="fill:'+s.color+';stroke:var(--pnl);stroke-width:1.5"/>';
+      if(s.label){const[x,y]=pt(i,clamp((s.vals[i]||0)/max,0,1)+.12);
+        g+='<text class=vl x="'+x.toFixed(1)+'" y="'+(y+4).toFixed(1)+'" text-anchor="middle" style="fill:'+s.color+'">'+esc(s.vals[i]==null?'':s.vals[i])+'</text>'}});
+    g+='</g>'});
+  return raw('<svg class=radar viewBox="0 0 '+size+' '+size+'" width="100%" style="max-width:'+size+'px" role=img>'+g+'</svg>')}
+function meter(l,v,frac,o){
+  o=o||{};
+  return html`<div class="meter ${o.act?'click':''}" style="--mc:${o.color||'var(--acc)'};--i:${o.i||0};${o.lw?'--lw:'+o.lw+'px;':''}${o.vw?'--vw:'+o.vw+'px':''}" ${o.act?raw(o.act):''} title="${o.title||''}">
+    <span class=l>${l}</span><span class=tr><span class=fl style="width:${(clamp(frac,0,1)*100).toFixed(1)}%"></span></span><span class=v>${v}</span></div>`}
+function stack(parts,lg){
+  return html`<div class="stack ${lg?'lg':''}">${parts.filter(p=>p.v>0).map((p,i)=>html`<span style="width:${p.v}%;background:${p.c};animation-delay:${i*80}ms" title="${p.n} ${p.v}%">${lg&&p.v>=7?p.v+'%':''}</span>`)}</div>`}
+const legend=items=>html`<div class=legend>${items.map(([n,c])=>html`<span style="--lc:${c}">${n}</span>`)}</div>`;
+function countUp(root){
+  $$('[data-count]',root).forEach(el=>{
+    const to=Number(el.dataset.count),dec=Number(el.dataset.dec||0),suf=el.dataset.suf||'';
+    if(!isFinite(to))return;
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches||(root&&root.classList&&root.classList.contains('quiet'))){el.textContent=fmtC(to,dec)+suf;return}
+    const t0=performance.now(),D=900;
+    const step=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);el.textContent=fmtC(to*e,dec)+suf;if(k<1)requestAnimationFrame(step)};
+    requestAnimationFrame(step)})}
+const fmtC=(v,dec)=>dec?v.toFixed(dec):Math.round(v).toLocaleString('zh-CN');
+const cnt=(v,dec,suf)=>typeof v==='number'?html`<span data-count="${v}" data-dec="${dec||0}" data-suf="${suf||''}">${fmtC(v,dec||0)}${suf||''}</span>`:(v==null?'—':v);
+const img=(src,cls,alt)=>src?html`<img loading=lazy decoding=async class="${cls||''}" src="${src}" alt="${alt||''}">`:'';
+const empty=(msg,ic,sm)=>html`<div class="empty ${sm?'sm':''}">${icon(ic||'layers')}<div>${msg}</div></div>`;
+
+const page=(inner)=>html`<div class=page>${inner}</div>`;
+const head=(eyebrow,title,sub,tools)=>html`<div class=ph><div class=t>${eyebrow?html`<div class=eyebrow>${eyebrow}</div>`:''}
+  <h1>${title}</h1>${sub?html`<div class=sub>${sub}</div>`:''}</div>${tools?html`<div class=tools>${tools}</div>`:''}</div>`;
+const segQ=(k,cur,opts)=>html`<div class=seg role=tablist>${opts.map(([v,l,n])=>html`<button class="${String(cur)===String(v)?'on':''}" data-act=q data-k="${k}" data-v="${v}">${l}${n!=null?html` <span class=n>${n}</span>`:''}</button>`)}</div>`;
+const chipsQ=(k,cur,opts)=>html`<div class=chips>${opts.map(([v,l,n])=>html`<button class="chip ${String(cur)===String(v)?'on':''}" data-act=q data-k="${k}" data-v="${v}">${l}${n!=null?html`<span class=n>${n}</span>`:''}</button>`)}</div>`;
+ACT.q=a=>patch({[a.dataset.k]:a.dataset.v});
+ACT.nav=a=>{location.hash=a.dataset.h.slice(1)};
+
+function roomCard(r,i){
+  const s=API.latest(r),sa=API.latest(r,true)||s,first=(r.name||'?').slice(0,1);
+  const key=(r.name+' '+(r.category||'')+' '+(r.anchor||'')).toLowerCase();
+  if(!s)return html`<div class="room dead rv" style="--i:${i}" data-name="${key}">
+    <div class=cover><div class=ph0><b>${first}</b></div><div class=top><span class="pill glass">${r.room_id===''?'待接入':'已登记'}</span></div></div>
+    <div class=bd><div class=nm>${r.name}</div><div class=mt><span>${r.category||'—'}</span><span>${r.anchor||''}</span></div>
+    ${r.room_id===''?html`<div class=mt><span class=wrn>缺房间号，补上即可采集</span></div>`:''}</div></div>`;
+  const dims=(r.dims||[]).filter(d=>d.dim!=='risk');
+  return html`<a class="room rv" style="--i:${i}" href="${href('s',{p:sa.path})}" data-name="${key}">
+    <div class=cover data-scrub="${s.path}"><div class=ph0><b>${first}</b></div>${img(API.frame(s.path,1e9),'cv')}
+      <div class=top>${r.recording?html`<span class="pill live"><span class=dot></span>直播中</span>`:''}<span class="pill glass ${r.group==='own'?'own':''}">${GRP[r.group]||'未登记'}</span></div>
+      <div class=btm><span>${durS(r.total_elapsed)}</span><span>${r.total_danmu?num(r.total_danmu)+' 弹幕':'无弹幕'}</span></div>
+      <div class=scrub><i></i></div><div class=scrubt></div></div>
+    <div class=bd><div class=nm title="${r.name}">${r.name}</div>
+      <div class=mt><span>${r.category||'—'} · ${r.sessions.length} 场</span>${r.risk?html`<span class=bad style="color:var(--bad);font-weight:600">风险 ${r.risk}</span>`:html`<span>${r.analyzed_n} 已分析</span>`}</div>
+      ${dims.length?html`<div class=dm>${dims.map(d=>html`<div title="${d.name} 覆盖 ${d.used}/${d.total}">${d.name.slice(0,2)}<i><u style="width:${d.total?(d.used/d.total*100).toFixed(0):0}%;--dc:${DIMC[d.dim]}"></u></i></div>`)}</div>`:''}
+    </div></a>`}
+function scrubMount(root){
+  $$('[data-scrub]',root).forEach(cv=>{
+    const p=cv.dataset.scrub,im=$('img',cv);if(!im)return;
+    const orig=im.getAttribute('src');let secs=null,raf=0,lx=0;
+    cv.addEventListener('pointerenter',async e=>{
+      if(e.pointerType==='touch')return;
+      secs=API.framesNow(p)||await API.frames(p).catch(()=>[]);
+      const st=Math.max(1,Math.ceil((secs||[]).length/16));
+      (secs||[]).forEach((x,i)=>{if(i%st===0){const m=new Image();m.src=API.frame(p,x)}})});
+    cv.addEventListener('pointermove',e=>{
+      if(e.pointerType==='touch')return;lx=e.clientX;if(raf)return;
+      raf=requestAnimationFrame(()=>{raf=0;if(!secs||secs.length<2)return;
+        const b=cv.getBoundingClientRect(),f=clamp((lx-b.left)/b.width,0,.9999),i=Math.floor(f*secs.length);
+        const u=API.frame(p,secs[i]);if(im.getAttribute('src')!==u){im.classList.remove('broken');im.src=u}
+        cv.classList.add('scrubbing');cv.style.setProperty('--p',(f*100).toFixed(1)+'%');$('.scrubt',cv).textContent=mmss(secs[i])})});
+    cv.addEventListener('pointerleave',()=>{cv.classList.remove('scrubbing');if(orig&&im.getAttribute('src')!==orig)im.src=orig})})}
+function filterRooms(v){
+  v=(v||'').trim().toLowerCase();let n=0;
+  $$('.room[data-name]').forEach(el=>{el.hidden=!!v&&!el.dataset.name.includes(v);if(!el.hidden)n++});
+  $$('[data-sect]').forEach(s=>{s.hidden=!$$('.room[data-name]',s).some(x=>!x.hidden)});
+  const c=$('#roomcount');if(c)c.textContent=n+' 间';
+  const e=$('#roomempty');if(e)e.hidden=n>0}
+INP.boardk=debounce(a=>{
+  filterRooms(a.value);
+  const cur=Object.fromEntries(R.q);if(a.value.trim())cur.k=a.value.trim();else delete cur.k;
+  history.replaceState(history.state,'',href('board',cur));parseHash()},90);
+VIEWS.board=async q=>{
+  const B=API.base,tree=B.tree||[],t=B.total||{},pend=B.pending||[];
+  const g=q.get('g')||'all',c=q.get('c')||'',k=q.get('k')||'',so=q.get('o')||'recent';
+  const live=tree.filter(r=>r.recording),own=tree.filter(r=>r.group==='own'),bm=tree.filter(r=>r.group==='benchmark');
+  const cats=[...new Set(tree.map(r=>r.category).filter(Boolean))].sort();
+  const last=r=>(API.latest(r)||{}).started||'';
+  const SORT={recent:(a,b)=>last(b).localeCompare(last(a)),dur:(a,b)=>b.total_elapsed-a.total_elapsed,
+    danmu:(a,b)=>b.total_danmu-a.total_danmu,risk:(a,b)=>(b.risk||0)-(a.risk||0)||last(b).localeCompare(last(a))};
+  const rooms=tree.filter(r=>(g==='all'||(g==='live'?r.recording:r.group===g))&&(!c||r.category===c)).sort(SORT[so]||SORT.recent);
+  const list=B.list||[],byDay={};
+  let end=list.reduce((m,s)=>dayOf(s.started)>m?dayOf(s.started):m,'');
+  const endD=end?new Date(end+'T00:00:00'):new Date();
+  const days=[];for(let i=13;i>=0;i--){const d=new Date(endD);d.setDate(endD.getDate()-i);
+    days.push(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()))}
+  list.forEach(s=>{const d=dayOf(s.started);const x=byDay[d]=byDay[d]||{o:0,b:0};if(s.group==='own')x.o++;else x.b++});
+  const mx=Math.max(1,...days.map(d=>(byDay[d]||{o:0,b:0}).o+(byDay[d]||{o:0,b:0}).b));
+  const act=html`<div class=act>${days.map((d,i)=>{const x=byDay[d]||{o:0,b:0};
+    return html`<div class=col style="--i:${i}" title="${d}：我方 ${x.o} 场 · 标杆 ${x.b} 场">${x.b?html`<span class=b style="height:${x.b/mx*100}%"></span>`:''}${x.o?html`<span class=o style="height:${x.o/mx*100}%"></span>`:''}${!x.o&&!x.b?html`<span class=z></span>`:''}</div>`})}</div>
+    <div class=act-x>${days.map((d,i)=>html`<span>${i%2===0||days.length<10?d.slice(8):''}</span>`)}</div>`;
+  const rate=t.sessions?Math.round((t.analyzed||0)/t.sessions*100):0;
+  const kpi=(ic,l,v,s,cls)=>html`<div class="kpi rv ${cls||''}"><i>${icon(ic)}${l}</i><b>${v}</b><div class=s>${s}</div></div>`;
+  const sect=(title,note,arr,dead)=>arr.length?html`<section data-sect><div class=sect><h2>${title}</h2><span class=note>${note}</span></div>
+    <div class=rooms>${arr.map((r,i)=>roomCard(dead?{...r,sessions:[],room_id:r.room_id||''}:r,i))}</div></section>`:'';
+  const flat=g!=='all'||c;
+  const body=flat?html`<section data-sect><div class=rooms>${rooms.map((r,i)=>roomCard(r,i))}</div></section>`
+    :html`${sect('我方主播',own.length+' 间',rooms.filter(r=>r.group==='own'))}
+      ${sect('标杆库',bm.length+' 间 · '+bm.reduce((a,b)=>a+b.analyzed_n,0)+' 场已分析',rooms.filter(r=>r.group==='benchmark'))}
+      ${sect('未登记',rooms.filter(r=>r.group!=='own'&&r.group!=='benchmark').length+' 间',rooms.filter(r=>r.group!=='own'&&r.group!=='benchmark'))}
+      ${sect('待接入',pend.length+' 间 · 补上房间号即可采集',pend.map(p=>({...p,room_id:''})),true)}`;
+  return {title:'总览',html:page(html`
+    ${head(html`${icon('spark')}直播主播能力标准化`,'直播间总览',html`采集行业标杆直播 → 转写标注 → 萃取标准 → 对照自播找差距${B.generated_at?html` · 数据更新于 <span class=mono>${B.generated_at}</span>`:''}`,
+      html`<a class="btn ghost" href="#/target">${icon('target')}看我方差距</a><a class=btn href="#/compare">${icon('versus')}发起对标</a>`)}
+    <div class=hero>
+      <div class=kpis>
+        ${kpi('check','已分析场次',html`${cnt(t.analyzed||0)}<small>/ ${num(t.sessions||0)}</small>`,'分析率 '+rate+'%','hero')}
+        ${kpi('film','直播间',cnt(tree.length),'我方 '+own.length+' · 标杆 '+bm.length)}
+        ${kpi('msg','弹幕',cnt(t.danmu||0),'真人 + 中控刷屏')}
+        ${kpi('mic','转写字数',html`${cnt(r1((t.chars||0)/1e4),1)}<small>万字</small>`,'逐字稿总量')}
+        ${kpi('live','正在直播',html`<span style="color:${live.length?'var(--bad)':'inherit'}">${cnt(live.length)}</span>`,live.length?live.slice(0,2).map(r=>r.name).join('、'):'当前无直播')}
+        ${kpi('flag','待接入',cnt(pend.length),'补房间号即可采集')}
+      </div>
+      <div class="card rv" style="--i:3"><div class=card-h><h3>近 14 天采集</h3><span class=note>场次 / 天</span>
+        <div class=r>${legend([['标杆','var(--c-p)'],['我方','var(--c-i)']])}</div></div><div class=card-b>${act}</div></div>
+    </div>
+    <div class=toolbar>
+      ${segQ('g',g,[['all','全部',tree.length],['own','我方',own.length],['benchmark','标杆',bm.length],['live','在播',live.length]])}
+      <select class=select data-chg=q data-k=c aria-label="品类"><option value="">全部品类</option>${cats.map(x=>html`<option value="${x}" ${x===c?raw('selected'):''}>${x}</option>`)}</select>
+      <select class=select data-chg=q data-k=o aria-label="排序">${[['recent','最近开播'],['dur','累计时长'],['danmu','弹幕量'],['risk','风险优先']].map(([v,l])=>html`<option value="${v}" ${v===so?raw('selected'):''}>${l}</option>`)}</select>
+      <span class=sp></span>
+      <label class=inwrap>${icon('search')}<input class=input data-inp=boardk value="${k}" placeholder="筛选直播间 / 品类" style="width:220px" aria-label="筛选直播间"></label>
+      <span class="muted mono" id=roomcount style="font-size:12px">${rooms.length} 间</span>
+    </div>
+    ${body}
+    <div id=roomempty hidden>${empty('没有匹配的直播间','search')}</div>
+    ${!rooms.length&&!(g==='all'&&!c&&pend.length)?empty('这个筛选下没有直播间'):''}`),
+    mount:root=>{countUp(root);scrubMount(root);if(k)filterRooms(k)}}};
+
+const STATE={ok:['ok','达标','var(--ok)'],flat:['acc','接近','var(--acc)'],bad:['warn','落后','var(--c-s)']};
+function bullet(o,b,st){
+  if(typeof o!=='number'||typeof b!=='number')return '';
+  const m=Math.max(Math.abs(o),Math.abs(b))*1.2||1,col=(STATE[st]||STATE.flat)[2];
+  return html`<div class=bullet><div class=tr></div><div class=fl style="width:${clamp(o/m,0,1)*100}%;--bc:${col}"></div><div class=mk style="left:${clamp(b/m,0,1)*100}%"></div></div>`}
+function sessPicker(sessions,cur,hrefOf){
+  return html`<div class=picker>${sessions.map(x=>{const m=API.meta(x.path)||{};
+    return html`<a href="${hrefOf(x.path)}" class="${x.path===cur?'on':''}">${img(API.frame(x.path,1e9))}<div><b>${x.name}</b><small>${x.category||m.category||''}${m.started?' · '+when(m.started):''}</small></div></a>`})}</div>`}
+VIEWS.target=async q=>{
+  const {sessions,path,T}=await API.target(q.get('p'));
+  const top=head(html`${icon('target')}对照同品类标杆找差距`,'靶向诊断','四级能力模型：外部形象 → 基础表达 → 核心销售 → 高阶结构，每项和同品类标杆均值比');
+  if(!sessions.length)return {title:'靶向诊断',html:page(html`${top}<div class=card>${empty('还没有我方已分析的场次。先采集并分析我方直播，这里出靶向诊断','target')}</div>`)};
+  const pk=sessPicker(sessions,path,p=>href('target',{p}));
+  if(!T||T.error)return {title:'靶向诊断',html:page(html`${top}${pk}<div class=card>${empty(T&&T.error||'这一场还没出诊断')}</div>`)};
+  const L=T.levels||[],LS=T.level_scores||{},items=T.items||[];
+  const bad=items.filter(x=>x.state==='bad').length,ok=items.filter(x=>x.state==='ok').length;
+  const ranked=L.filter(l=>LS[l]!=null).sort((a,b)=>LS[a]-LS[b]);
+  const benchNames=[...new Set(T.bench_names||[])];
+  const lvCard=(lv,li)=>{const its=items.filter(x=>x.level===lv);if(!its.length)return '';const ls=LS[lv];
+    return html`<div class="card rv" style="--i:${li+2};margin-top:14px">
+      <div class=lvlh><span class="pill acc mono">L${li+1}</span><h3>${lv}</h3><span class=note style="color:var(--dim);font-size:12px">${its.length} 项 · 落后 ${its.filter(x=>x.state==='bad').length}</span>
+        <div class=r>${ls!=null?html`<div class=lvlbar style="--lc:${scoreC(ls)}"><i style="width:${ls*10}%"></i></div><b style="color:${scoreC(ls)};font-size:18px;font-variant-numeric:tabular-nums">${ls}</b>`:''}</div></div>
+      <div class="trow thead"><span>维度</span><span class=bl>我方 vs 标杆均值</span><span class=v>我方</span><span class="v b">标杆</span><span class=st>判定</span><span class=v>得分</span></div>
+      ${its.map(x=>{const s=STATE[x.state]||STATE.flat;
+        return html`<div class=trow><div class=nm><b>${x.dim}</b>${x.note?html`<div>${x.note}</div>`:''}</div>
+          <div class=bl>${bullet(x.ours,x.bench,x.state)}</div>
+          <div class=v><b>${x.ours_s}</b>${x.gap!=null?html`<small style="color:${s[2]}">${x.gap>0?'+':''}${x.gap}</small>`:''}</div>
+          <div class="v b">${x.bench_s}</div>
+          <div class=st><span class="pill ${s[0]}">${s[1]}</span></div>
+          <div class=sc style="color:${scoreC(x.score)}">${x.score==null?'—':x.score}<small>/10</small></div></div>`})}</div>`};
+  const acts=T.actions||[],terms=(T.lang&&T.lang.term_top)||[],tmax=Math.max(1,...terms.map(x=>x.n));
+  return {title:'靶向诊断 · '+T.name,html:page(html`${top}${pk}
+    <div class="card rv" style="margin-top:14px;overflow:hidden">
+      <div class=card-b style="display:grid;grid-template-columns:auto minmax(220px,300px) minmax(0,1fr);gap:28px;align-items:center;padding:22px 24px">
+        <div style="text-align:center">${ring(T.total_score,10,{size:156,sw:12,sub:'综合得分 / 10'})}</div>
+        <div>${radar(L,[{vals:L.map(()=>8),color:'var(--ok)',fill:0,dash:1},{vals:L.map(l=>LS[l]),color:'var(--acc)',label:1}],{size:280})}
+          <div style="display:flex;justify-content:center;margin-top:-6px">${legend([['本场','var(--acc)'],['达标线 8','var(--ok)']])}</div></div>
+        <div style="min-width:0">
+          <div class=row style="gap:8px;flex-wrap:wrap"><h2 style="font-size:21px">${T.name}</h2><span class=pill>${T.category}</span></div>
+          <div class=muted style="font-size:12.5px;margin-top:6px" title="${benchNames.join('、')}">对标 ${T.bench_n} 场同品类标杆：${benchNames.slice(0,3).join('、')}${benchNames.length>3?' 等':''}</div>
+          <div class=g style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px">
+            <div class="kpi sm"><i>落后项</i><b style="color:var(--warn)">${bad}<small>/ ${items.length}</small></b></div>
+            <div class="kpi sm"><i>达标项</i><b style="color:var(--ok)">${ok}</b></div>
+            <div class="kpi sm"><i>结构偏离</i><b>${T.structure_gap!=null?T.structure_gap:'—'}<small>${T.structure_gap!=null?'pt':''}</small></b></div></div>
+          ${ranked.length?html`<div class="callout ${LS[ranked[0]]<6?'warn':'acc'}" style="margin-top:14px">${icon('spark')}<div>最该先补的是 <b>${ranked[0]}</b>（${LS[ranked[0]]} 分）${ranked.length>1?html`，最强的是 <b>${ranked.at(-1)}</b>（${LS[ranked.at(-1)]} 分）`:''}。${acts[0]?html`第一优先动作：<b>${acts[0].dim}</b>。`:''}</div></div>`:''}
+        </div></div></div>
+    ${acts.length?html`<div class=sect><h2>靶向提升动作</h2><span class=note>按优先级，照着练</span></div>
+      <div class="card rv" style="--i:1">${acts.map((a,i)=>html`<div class=action><div class=p>P${i+1}</div><div><h4>${a.dim}<span class="pill warn">我方 ${a.ours}</span><span class=pill>标杆 ${a.bench}</span></h4><p>${a.advice}</p></div></div>`)}</div>`:''}
+    <div class=sect><h2>四级能力明细</h2><span class=note>竖线是标杆均值，条是我方</span></div>
+    ${L.map(lvCard)}
+    ${terms.length?html`<div class="card rv" style="margin-top:14px"><div class=card-h><h3>本场高频专业词</h3><span class=note>越大越常说</span></div>
+      <div class=card-b><div class=cloud>${terms.map(x=>html`<span style="font-size:${13+x.n/tmax*16}px">${x.term}<small>×${x.n}</small></span>`)}</div></div></div>`:''}`),
+    mount:root=>{const on=$('.picker a.on',root);if(on)on.scrollIntoView({inline:'center',block:'nearest'})}}};
+
+ACT.swap=()=>{const a=R.q.get('a'),b=R.q.get('b');patch({a:b,b:a})};
+VIEWS.compare=async q=>{
+  const list=(API.base.list||[]).filter(s=>s.analyzed);
+  let a=q.get('a'),b=q.get('b');
+  const catOf=p=>((API.meta(p)||{}).category)||'';
+  if(!a||!b){
+    const own=list.filter(x=>x.group==='own'),bms=list.filter(x=>x.group==='benchmark');
+    a=a||((own[0]||list[0]||{}).path);
+    b=b||((bms.find(x=>x.path!==a&&catOf(x.path)===catOf(a))||bms.find(x=>x.path!==a)||list.find(x=>x.path!==a)||{}).path);
+    if(a&&b)return {redirect:['compare',{a,b}]}}
+  const top=head(html`${icon('versus')}两场并排，差在哪一眼看清`,'对标分析','手法覆盖、关键指标、对标用了而本场没用的手法（附原话）');
+  if(!a||!b)return {title:'对标分析',html:page(html`${top}<div class=card>${empty('至少需要两场已分析的直播')}</div>`)};
+  const c=await API.compare(a,b);
+  const opts=cur=>{const grp=[['own','我方'],['benchmark','标杆']];
+    return html`${grp.map(([gk,gl])=>{const xs=list.filter(x=>x.group===gk);return xs.length?html`<optgroup label="${gl}">${xs.map(x=>html`<option value="${x.path}" ${x.path===cur?raw('selected'):''}>${x.name} · ${when(x.started)}</option>`)}</optgroup>`:''})}
+      ${list.filter(x=>x.group!=='own'&&x.group!=='benchmark').map(x=>html`<option value="${x.path}" ${x.path===cur?raw('selected'):''}>${x.name} · ${when(x.started)}</option>`)}`};
+  const side=(p,k,cls)=>{const m=API.meta(p)||{},gi=gal([{src:API.frame(p,1e9),cap:m.name||''}]);
+    return html`<div class="side2 ${cls}">${API.frame(p,1e9)?html`<img src="${API.frame(p,1e9)}" alt="" data-act=lb data-g="${gi}" loading=lazy>`:''}
+      <div style="min-width:0;flex:1"><div class=row style="gap:6px;${cls==='b'?'justify-content:flex-end':''}">${grpPill(m.group)}<span class=muted style="font-size:12px">${m.category||''}</span></div>
+      <b style="margin:6px 0">${m.name||p}</b><select class=select data-chg=q data-k="${k}" style="width:100%" aria-label="选择场次">${opts(p)}</select></div></div>`};
+  if(!c||c.error)return {title:'对标分析',html:page(html`${top}<div class=card>${empty(c&&c.error||'对比失败')}</div>`)};
+  const neg=c.metrics.filter(m=>m.good===false).sort((x,y)=>x.pct-y.pct),pos=c.metrics.filter(m=>m.good===true).sort((x,y)=>y.pct-x.pct);
+  const worst=c.dims.filter(d=>d.gap<0).sort((x,y)=>x.gap-y.gap)[0];
+  const ins=[];
+  if(pos[0])ins.push(html`<div>${icon('up','pos')}<span>「<b>${pos[0].name}</b>」领先对标 <b class=pos>${pos[0].pct}%</b></span></div>`);
+  if(neg[0])ins.push(html`<div>${icon('down','neg')}<span>「<b>${neg[0].name}</b>」落后 <b class=neg>${Math.abs(neg[0].pct)}%</b></span></div>`);
+  if(worst)ins.push(html`<div>${icon('alert','wrn')}<span>手法覆盖差距最大在「<b>${worst.name}</b>」，少 ${Math.abs(worst.gap)} 种</span></div>`);
+  if(c.missing.length)ins.push(html`<div>${icon('spark')}<span>对标用了、本场没用的手法 <b>${c.missing.length}</b> 项，见右侧原话</span></div>`);
+  const db=c.dims.map(d=>{const pa=d.total?d.a/d.total*100:0,pb=d.total?d.b/d.total*100:0;
+    return html`<div class=db><span>${d.name}</span><div class=tr><div class=ln style="left:${Math.min(pa,pb)}%;width:${Math.abs(pa-pb)}%"></div>
+      <div class="pt b" style="left:${pb}%" title="对标 ${d.b}/${d.total}"></div><div class="pt a" style="left:${pa}%" title="本场 ${d.a}/${d.total}"></div></div>
+      <span class=v><span style="color:var(--acc)">${d.a}</span> / ${d.b} <span class="${d.gap>0?'pos':d.gap<0?'neg':'muted'}">${d.gap>0?'+':''}${d.gap}</span></span></div>`});
+  const dv=c.metrics.map((m,i)=>{const w=clamp(Math.abs(m.pct),0,100)/2,col=m.good===true?'var(--ok)':m.good===false?'var(--bad)':'var(--dim2)';
+    return html`<div class=dv><span>${m.name}<div class=muted style="font-size:11px">${m.unit||''}</div></span>
+      <div class=tr><div class="fl ${m.pct>=0?'r':'l'}" style="width:${w}%;background:${col};animation-delay:${i*60}ms"></div></div>
+      <span class=v><b>${m.a}</b> vs ${m.b}<div style="color:${col};font-weight:650">${m.pct>0?'+':''}${m.pct}%</div></span></div>`});
+  return {title:'对标分析',html:page(html`${top}
+    <div class="card rv"><div class=card-b style="padding:22px 24px">
+      <div class=vs>${side(a,'a','a')}<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><div class=disc>VS</div>
+        <button class="btn ghost sm" data-act=swap title="交换两边">${icon('swap')}交换</button></div>${side(b,'b','b')}</div>
+      ${ins.length?html`<div class=insights>${ins}</div>`:''}</div></div>
+    <div class="g g2" style="margin-top:14px;align-items:start">
+      <div class="card rv" style="--i:1"><div class=card-h><h3>能力维度覆盖</h3><span class=note>用到几种手法</span>
+        <div class=r>${legend([['本场','var(--acc)'],['对标','var(--dim2)']])}</div></div>
+        <div class=card-b>${db}<div class=divider></div><div class=lbl>关键指标差异（相对对标）</div>${dv.length?dv:empty('没有可比指标','layers',1)}</div></div>
+      <div class="card scroll rv" style="--i:2;--mh:760px"><div class=card-h><h3>对标用了、本场没用</h3><span class=note>${c.missing.length} 项 · 附对标原话</span></div>
+        <div class=card-b>${c.missing.length?c.missing.map(x=>html`<div class="item ${x.dim==='sales'?'warn':x.dim==='interact'?'ok':''}">
+          <div class=h><span class="tag d-${x.dim}" style="margin:0">${x.name}</span><span class=muted style="font-size:12px;font-weight:500">对标用了 ${x.bench_n} 次</span></div>
+          ${(x.examples||[]).slice(0,2).map(e=>html`<div class=quote><span class=ts>${mmss(e.t)}</span>${e.text}${e.hit&&e.hit.length?html` <span class="pill warn" style="height:18px">命中：${[].concat(e.hit).join('、')}</span>`:''}</div>`)}</div>`)
+          :empty('没有缺口，对标用过的手法本场都用了','check',1)}
+        ${c.extra&&c.extra.length?html`<div class=lbl style="margin-top:18px">本场独有</div><div>${c.extra.map(x=>html`<span class=tag>${x.name} ×${x.n}</span>`)}</div>`:''}</div></div>
+    </div>`)}};
+
+VIEWS.bench=async q=>{
+  const {cats,cat,b}=await API.bench(q.get('c'));
+  const top=head(html`${icon('trophy')}行业标杆的数字分布`,'标杆库','每个品类的标杆直播：关键指标落在什么区间、哪些手法几乎场场都用',
+    cats.length?chipsQ('c',cat,cats.map(x=>[x.category,x.category,x.n])):'');
+  if(!b||!b.n)return {title:'标杆库',html:page(html`${top}<div class=card>${empty('该品类还没有已分析的标杆场次','trophy')}</div>`)};
+  const core=(STATIC&&API.S.core)||[];
+  const ownS=STATIC?Object.values(API.IDX).filter(s=>s.group==='own'&&s.analyzed&&s.category===b.category):[];
+  const ss=b.sessions||[];
+  const strips=(b.metrics||[]).map(m=>{
+    const key=m.key||((core.find(c=>c.name===m.name)||{}).key);
+    const dots=key?ownS.map(s=>({v:s.metrics[key],n:s.name})).filter(d=>typeof d.v==='number'):[];
+    let lo=Math.min(m.min,...dots.map(d=>d.v)),hi=Math.max(m.max,...dots.map(d=>d.v));
+    const padv=(hi-lo)*.06||1;lo-=padv;hi+=padv;const X=v=>((v-lo)/(hi-lo)*100).toFixed(2)+'%';
+    return html`<div class=strip><div class=l><b>${m.name}</b><small>${m.unit||''} · ${m.n} 场</small></div>
+      <div class=tr><div class=rg style="left:${X(m.min)};width:calc(${X(m.max)} - ${X(m.min)})"></div>
+        <div class=iq style="left:${X(m.median)};width:calc(${X(m.p75)} - ${X(m.median)})" title="中位 ~ P75"></div>
+        <div class=md style="left:${X(m.median)}" title="中位 ${m.median}"></div>
+        ${dots.map(d=>html`<div class=ow style="left:${X(d.v)}" title="我方 · ${d.n}：${d.v}"></div>`)}
+        <span class=ax style="left:${X(m.min)}">${m.min}</span><span class=ax style="left:${X(m.max)}">${m.max}</span></div>
+      <div class=v>中位 <b>${m.median}</b><br>P75 ${m.p75}</div></div>`});
+  const tags=b.tags||[];
+  return {title:'标杆库 · '+b.category,html:page(html`${top}
+    ${!b.reliable?html`<div class="callout warn rv" style="margin-bottom:14px">${icon('alert')}<div>这个品类只有 <b>${b.n}</b> 场标杆，不足 15 场，分布仅供参考，样本积累后会更稳。</div></div>`:''}
+    <div class=kpis style="margin-bottom:14px">
+      <div class="kpi hero rv"><i>${icon('trophy')}标杆场次</i><b>${cnt(b.n)}</b><div class=s>${b.category}</div></div>
+      <div class="kpi rv" style="--i:1"><i>${icon('film')}覆盖直播间</i><b>${cnt(new Set(ss.map(x=>x.name)).size)}</b><div class=s>去重后</div></div>
+      <div class="kpi rv" style="--i:2"><i>${icon('clock')}累计时长</i><b>${cnt(r1(ss.reduce((a,x)=>a+(x.elapsed||0),0)/3600),1)}<small>小时</small></b><div class=s>全部标杆场次</div></div>
+      <div class="kpi rv" style="--i:3"><i>${icon('mic')}转写</i><b>${cnt(r1(ss.reduce((a,x)=>a+(x.chars||0),0)/1e4),1)}<small>万字</small></b><div class=s>逐字稿</div></div></div>
+    <div class="g gs" style="align-items:start">
+      <div class="card rv" style="--i:2"><div class=card-h><h3>指标分布</h3><span class=note>浅条=最低~最高，深条=中位~P75</span>
+        <div class=r>${ownS.length?legend([['我方场次','var(--ok)']]):''}</div></div><div class=card-b>${strips}</div></div>
+      <div class="card rv" style="--i:3"><div class=card-h><h3>手法使用率</h3><span class=note>出现在多少场里</span></div>
+        <div class=card-b>${tags.map((t,i)=>meter(t.name,t.rate+'%',t.rate/100,{color:DIMC[(t.key||'').split('.')[0]]||'var(--acc)',i,lw:78,title:'累计 '+t.total+' 次 · '+t.rooms+' 场'}))}</div></div></div>
+    ${ss.length?html`<div class=sect><h2>样本场次</h2><span class=note>${ss.length} 场 · 点开看单场诊断</span></div>
+      <div class="card rv"><div class=tblwrap><table class=tbl><thead><tr><th>直播间</th><th>开播</th><th class=n>时长</th><th class=n>转写字数</th><th></th></tr></thead><tbody>
+      ${ss.map(x=>html`<tr class=link data-act=nav data-h="${href('s',{p:x.path})}"><td><b>${x.name}</b></td><td class=mono style="font-size:12px">${when(x.started)}</td><td class=n>${durS(x.elapsed)}</td><td class=n>${num(x.chars)}</td><td class=n style="color:var(--acc)">${icon('arrow')}</td></tr>`)}
+      </tbody></table></div></div>`:''}`),mount:countUp}};
+
+function splitTop(s){
+  const out=[];let depth=0,cur='';
+  for(const ch of s){
+    if('（('.includes(ch))depth++;else if('）)'.includes(ch))depth=Math.max(0,depth-1);
+    if(depth===0&&/[-—→>]/.test(ch)){if(cur.trim())out.push(cur.trim());cur=''}else cur+=ch}
+  if(cur.trim())out.push(cur.trim());return out}
+function cycleChain(s){
+  if(!s)return '';
+  s=String(s);
+  let body=s.replace(/^[^：:（(]{0,14}[：:]/,''),tail='';
+  const e=body.search(/[。；;]/);if(e>0){tail=body.slice(e+1).trim();body=body.slice(0,e)}
+  let steps=splitTop(body);
+  if(steps.length<3){const m=s.match(/[（(]([^）)]+)[）)]/);
+    if(m){steps=m[1].split(/\s*[-—→>]+\s*/).filter(Boolean);tail=s.replace(m[0],'').replace(/^[，,。\s]+|[，,。\s]+$/g,'')}}
+  if(steps.length<3)return html`<p>${s}</p>`;
+  return html`<div class=chain style="margin-top:16px">${steps.map((x,i)=>{const m=x.match(/^(.+?)\s*[（(]([^）)]+)[）)]\s*$/);
+    return html`${i?html`<i>→</i>`:''}<span>${m?html`${m[1]}<small style="opacity:.7;margin-left:5px;font-weight:500">${m[2]}</small>`:x}</span>`})}</div>${tail?html`<div class=meta>${tail}</div>`:''}`}
+VIEWS.method=async q=>{
+  const {cats,cat,m,pb}=await API.method(q.get('c'));
+  const top=head(html`${icon('book')}从标杆里提炼的打法`,'方法论','品类共识 · 话术模板 · 新手路径 · 常见坑 · 我方对照 · 标杆逐场拆解',
+    cats.length?chipsQ('c',cat,cats.map(x=>[x.category,html`${x.category}${x.has?'':' ·未提炼'}`,x.bench_n])):'');
+  if(!cats.length)return {title:'方法论',html:page(html`${top}<div class=card>${empty('还没有可提炼的品类','book')}</div>`)};
+  if(!m)return {title:'方法论',html:page(html`${top}<div class=card>${empty(html`该品类还没生成方法论。标杆分析完成后运行 <code class=mono>scripts/method.py ${cat||''}</code>`,'book')}</div>`)};
+  const cs=m.consensus||{},plays=cs.plays||[],tpl=m.templates||[],pit=m.pitfalls||[],path=m.newcomer_path||[];
+  let pbHtml='';
+  if(pb&&pb.n){
+    const cr=pb.concerns_rank||[],crMax=Math.max(1,...cr.map(x=>x.n));
+    const flows=(pb.sessions||[]).filter(s=>(s.flow||[]).length);
+    pbHtml=html`<div class=sect><h2>标杆逐场拆解</h2><span class=note>${pb.n} 场 · 全部带原话</span></div>
+      ${(pb.urgency_rank||[]).length?html`<div class="row wrap rv" style="margin-bottom:14px;gap:8px"><span class=muted style="font-size:12.5px">逼单手法覆盖：</span>${pb.urgency_rank.map(x=>html`<span class="pill warn">${x.u} · ${x.n} 场</span>`)}</div>`:''}
+      <div class="g g2" style="align-items:start">
+        ${cr.length?html`<div class="card rv"><div class=card-h><h3>消费者最关注 TOP ${Math.min(cr.length,10)}</h3><span class=note>弹幕聚合 · 右侧为标杆回应率</span></div><div class=card-b>
+          ${cr.slice(0,10).map((x,i)=>html`<div class=meter style="--lw:150px;--vw:96px;--mc:var(--c-s);--i:${i}"><span class=l><b class=mono style="color:${i<3?'var(--warn)':'var(--dim2)'};margin-right:6px">${i+1}</b>${x.topic}</span><span class=tr><span class=fl style="width:${x.n/crMax*100}%"></span></span><span class=v>${x.n} 条 · <b style="color:${x.answered_rate>=80?'var(--ok)':'var(--bad)'}">${x.answered_rate}%</b></span></div>`)}
+          <div class=muted style="font-size:12px;margin-top:10px">回应率低的主题，就是我方讲解里该补的内容</div></div></div>`:''}
+        ${flows.length?html`<div class="card rv" style="--i:1"><div class=card-h><h3>讲解顺序对照</h3><span class=note>各标杆的讲品流程</span></div>
+          <div class=card-b style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px">${flows.map(s=>html`<div><div class=lbl style="margin-top:0;text-transform:none;letter-spacing:0;color:var(--fg)">${s.name}</div><div class=steps>${s.flow.map(f=>html`<div>${f}</div>`)}</div></div>`)}</div></div>`:''}
+      </div>
+      <div class="card acc-list rv" style="margin-top:14px">${(pb.sessions||[]).map((s,i)=>html`<details ${i===0?raw('open'):''}>
+        <summary><span class="pill bm">${i+1}</span><b>${s.name}</b><span class=muted style="font-size:12px">${s.n_chains} 条论证 · 卖点重复 ${s.core_repeat} 次 · CTA ${s.cta_per_min} 次/分</span>${icon('right','chev')}</summary>
+        <div class="in g g2">
+          <div><div class=lbl>讲品结构（${(s.flow||[]).length} 步）</div><div class=steps>${(s.flow||[]).map(f=>html`<div>${f}</div>`)}</div>
+            <div class=lbl>论证手法</div><div>${(s.methods||[]).map(x=>html`<span class="tag d-product">${x.m} ×${x.n}</span>`)}</div>
+            <div class=lbl>核心卖点</div><div style="font-size:13px">${s.core_what||'—'}<span class=muted>（重复 ${s.core_repeat} 次）</span></div>
+            ${s.cycle?html`<div class=lbl>循环完整度</div><div style="font-size:12.5px;color:var(--warn)">${s.cycle}</div>`:''}</div>
+          <div><div class=lbl>讲解逻辑链</div>${(s.chains||[]).map(c=>html`<div class=item><div class=h>${c.point||''}<span class="tag d-product" style="margin:0">${c.method||''}</span></div><div class=x>${c.how||''}</div>${c.quote?html`<div class=quote><span class=ts>${mmss(c.t<0?0:c.t)}</span>${c.quote}</div>`:''}</div>`)}</div>
+          <div><div class=lbl>价格塑造</div>${(s.price_examples||[]).map(u=>html`<div class=item><div class=h>${u.name}</div>${(u.examples||[]).map(e=>html`<div class=quote>${e}</div>`)}</div>`)}${(s.price_examples||[]).length?'':html`<div class=muted>—</div>`}</div>
+          <div><div class=lbl>逼单（紧迫感）</div>${(s.urgency||[]).map(u=>html`<div class="item warn"><div class=h>${u.name}</div>${(u.examples||[]).map(e=>html`<div class=quote>${e}</div>`)}</div>`)}
+            <div class=lbl>行动指令原话</div>${(s.cta_examples||[]).map(e=>html`<div class=quote>${e}</div>`)}${(s.cta_examples||[]).length?'':html`<div class=muted>—</div>`}</div>
+          ${(s.audience||[]).length?html`<div style="grid-column:1/-1"><div class=lbl>该品牌观众最关注</div><div class=chips>${s.audience.map(a=>html`<span class="pill ${a.answered?'ok':'bad'}" title="${(a.samples||[]).join(' / ')}">${a.topic} · ${a.n} 条 · ${a.answered?'已回应':'未回应'}</span>`)}</div></div>`:''}
+        </div></details>`)}</div>`}
+  const gaps=m.gaps||[],acts=m.actions||[],keep=m.keep||[];
+  return {title:'方法论 · '+cat,html:page(html`${top}
+    <div class="consensus rv"><div class=eyebrow>${icon('spark')}品类共识 · ${m.bench_n} 场标杆提炼</div>
+      <h2 style="font-size:22px">${m.category}</h2><p>${cs.summary||''}</p>${cycleChain(cs.cycle)}
+      <div class=meta>${m.generated_at||''}${m.model?' · '+m.model:''}${m.reliable?'':' · 样本不足 15 场，仅供参考，待积累后重算'}</div></div>
+    ${plays.length?html`<div class=sect><h2>核心打法</h2><span class=note>${plays.length} 条</span></div>
+      <div class=plays>${plays.map((p,i)=>html`<div class="play rv" style="--i:${i}"><h4>${p.name||''}<small>${p.frequency||''}</small></h4><p>${p.desc||''}</p>
+        ${p.why?html`<div class=why>${icon('spark')} 为什么有效：${p.why}</div>`:''}
+        ${(p.evidence||[]).length?html`<div class=why>证据：${p.evidence.join(' / ')}</div>`:''}</div>`)}</div>`:''}
+    <div class="g g2" style="margin-top:14px;align-items:start">
+      <div class="card rv"><div class=card-h><h3>话术模板</h3><span class=note>${tpl.length} 条 · 可一键复制</span></div><div class=card-b>
+        ${tpl.length?tpl.map(t=>{const sc=t.scene||'',d=sc.includes('逼单')?'sales':sc.includes('互动')?'interact':'product';
+          return html`<div class=tpl><button class="btn ghost sm copy" data-act=copy data-text="${t.template||''}">${icon('copy')}复制</button>
+            <span class="tag d-${d}" style="margin:0">${sc}</span><div class=t>${t.template||''}</div>
+            ${(t.examples||[]).map(e=>html`<div class=quote>${e}</div>`)}${t.note?html`<div class=muted style="font-size:12px;margin-top:6px">注意：${t.note}</div>`:''}</div>`}):empty('暂无','layers',1)}</div></div>
+      <div class=g style="align-content:start">
+        <div class="card rv" style="--i:1"><div class=card-h><h3>新手路径</h3><span class=note>从易到难</span></div><div class=card-b>${path.length?html`<div class=steps>${path.map(s=>html`<div>${s}</div>`)}</div>`:empty('暂无','layers',1)}</div></div>
+        <div class="card rv" style="--i:2"><div class=card-h><h3>常见坑</h3><span class=note>${pit.length} 条</span></div><div class=card-b>
+          ${pit.length?pit.map(p=>html`<div class="item bad"><div class=h>${p.mistake||''}</div><div class=d>→ ${p.consequence||''}</div><div class=x>${icon('check','pos')} 正确做法：${p.fix||''}</div></div>`):empty('暂无','layers',1)}</div></div></div></div>
+    ${m.gap_summary||acts.length?html`<div class=sect><h2>我方对照</h2><span class=note>标杆标准 vs 我方主播</span></div>
+      ${m.gap_summary?html`<div class="callout acc rv" style="margin-bottom:14px">${icon('target')}<div>${m.gap_summary}</div></div>`:''}
+      <div class="g g2" style="align-items:start">
+        ${gaps.length?html`<div class="card rv"><div class=card-h><h3>逐维度差距</h3></div><div class=tblwrap><table class=tbl><thead><tr><th>维度</th><th>标杆</th><th>我方</th><th>差距</th></tr></thead><tbody>
+          ${gaps.map(g=>html`<tr><td><b>${g.dimension||''}</b></td><td style="font-size:12.5px">${g.bench||''}</td><td style="font-size:12.5px">${g.ours||''}</td><td style="font-size:12.5px;color:var(--warn)">${g.gap||''}</td></tr>`)}</tbody></table></div></div>`:''}
+        <div class=g style="align-content:start">
+          ${acts.length?html`<div class="card rv" style="--i:1"><div class=card-h><h3>改进动作</h3><span class=note>按优先级</span></div>
+            ${acts.map((a,i)=>html`<div class=action><div class=p>P${a.priority||i+1}</div><div><h4>${a.action||''}</h4><p>${a.how||''}</p>
+              ${a.benchmark_ref?html`<div class=muted style="font-size:12px;margin-top:4px">参照：${a.benchmark_ref}</div>`:''}${a.measure?html`<div class=muted style="font-size:12px">验证：${a.measure}</div>`:''}</div></div>`)}</div>`:''}
+          ${keep.length?html`<div class="card rv" style="--i:2"><div class=card-h><h3>要保持</h3></div><div class=card-b>${keep.map(k=>html`<div class="item ok"><div class=d>${k}</div></div>`)}</div></div>`:''}</div></div>`
+      :html`<div class="callout acc" style="margin-top:14px">${icon('target')}<div>该品类还没有我方主播的已分析场次，采集自己的直播后这里会出差距与改进动作</div></div>`}
+    ${pbHtml}`)}};
+
+const VFIELD={'makeup.level':'妆容强度','makeup.hair':'发型','makeup.lip':'唇色','makeup.eye':'眼妆','makeup.skin':'底妆',
+  'outfit.type':'服装款式','outfit.color':'服装主色','outfit.style':'风格','outfit.badge':'工牌/胸针','outfit.match':'搭配',
+  'staging.shot':'景别','staging.hpos':'水平位置','staging.product':'与产品关系','staging.gaze':'视线','staging.ratio':'人物占比','staging.pose':'姿态',
+  'scene.bg':'背景类型','scene.tone':'主色调','scene.density':'信息密度','scene.light':'灯光','scene.price_shown':'价格展示','scene.sticker_n':'贴片数'};
+const VDESC={'站位一致性':'主导景别/位置占比，越高机位越稳','妆造强度分':'1 素颜 – 4 舞台妆','道具使用密度':'件 / 采样点',
+  '直视镜头率':'反映镜头感','视觉信息密度':'1 简洁 – 4 极密','妆造变化次数':'仅有人物帧','有人物帧占比':'其余为商品特写镜头'};
+function distBars(dist,ex,keys,color){
+  return keys.map(k=>{const arr=(dist[k]||[]).slice(0,6);if(!arr.length)return '';const top=arr[0].pct||1;
+    return html`<div class=lbl>${VFIELD[k]||k}</div>${arr.map((x,i)=>{
+      const fr=((ex||{})[k]||{})[x.v];
+      const act=fr&&fr.length?'data-act=lb data-g="'+gal(fr.map(f=>({src:API.frameExact(f.path,f.sec),cap:(VFIELD[k]||k)+' · '+x.v,sub:(f.name?f.name+' · ':'')+mmss(f.sec)})))+'"':'';
+      return meter(html`${x.v}${act?html`<span class=vmk>${icon('image')}案例</span>`:''}`,x.pct+'%',x.pct/top,{act,i,lw:118,color:color||'var(--acc)',title:act?'点开看真实画面':''})})}`})}
+VIEWS.visual=async q=>{
+  const grp=q.get('grp')||'';
+  const {cats,cat,V,B,O,grpOk}=await API.visual(q.get('c'),grp);
+  const ownNames={};(API.base.tree||[]).filter(r=>r.group==='own'&&r.sessions.length).forEach(r=>{(ownNames[r.category]=ownNames[r.category]||[]).push(r.name)});
+  const top=head(html`${icon('eye')}量化必须可佐证`,'视觉量化','逐帧标注的妆造 / 站位 / 场景 / 道具分布 —— 带「案例」的条目点开能看到真实画面',
+    html`${cats.length?chipsQ('c',cat,cats.map(x=>[x.category,x.category,'标杆'+x.bench_n+(x.own_n?' · 我方'+x.own_n:'')])):''}
+    ${grpOk?segQ('grp',grp,[['','全部'],['benchmark','只看标杆'],['own','只看我方']]):''}`);
+  if(!cats.length)return {title:'视觉量化',html:page(html`${top}<div class=card>${empty('还没有视觉量化数据。跑 scripts/visual_metrics.py 后这里出画像','eye')}</div>`)};
+  if(!V||!V.n)return {title:'视觉量化',html:page(html`${top}<div class=card>${empty('该范围还没有量化过的场次','eye')}</div>`)};
+  const dist=V.dist||{},EX=V.examples||{},PEX=V.prop_examples||{},der=V.derived||[];
+  const ppl=(der.find(x=>x.key==='有人物帧占比')||{}).avg;
+  const props=(V.props||[]).map((x,i)=>{const fr=PEX[x.v];
+    const act=fr&&fr.length?'data-act=lb data-g="'+gal(fr.map(f=>({src:API.frameExact(f.path,f.sec),cap:'道具 · '+x.v,sub:(f.name?f.name+' · ':'')+mmss(f.sec)})))+'"':'';
+    return meter(html`${x.v}${act?html`<span class=vmk>${icon('image')}案例</span>`:''}`,x.pct+'%',x.pct/100,{act,i,lw:118,color:'var(--c-s)'})});
+  let bo='';
+  if(B&&O&&B.n&&O.n){
+    const get=(P,k)=>{const x=(P.derived||[]).find(y=>y.key===k);return x?x.avg:null};
+    const keys=(B.derived||[]).map(x=>x.key).filter(k=>get(O,k)!=null);
+    bo=keys.length?html`<div class=sect><h2>标杆 vs 我方</h2><span class=note>标杆 ${B.n} 场 / 我方 ${O.n} 场</span></div>
+      <div class="card rv"><div class=card-b style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 28px">
+      ${keys.map(k=>{const b=get(B,k),o=get(O,k),mx=Math.max(b||0,o||0)||1,pc=/率|占比/.test(k)?'%':'',d=r1(o-b);
+        return html`<div style="padding:8px 0"><div class=row style="justify-content:space-between;font-size:13px"><b style="font-weight:600">${k}</b><span class=mono style="color:${d>=0?'var(--ok)':'var(--warn)'};font-size:12px">${d>0?'+':''}${d}${pc}</span></div>
+          ${meter('标杆',b+pc,b/mx,{color:'var(--dim2)',lw:34,vw:60})}${meter('我方',o+pc,o/mx,{color:'var(--ok)',lw:34,vw:60})}</div>`})}</div></div>`:''}
+  return {title:'视觉量化 · '+V.category,html:page(html`${top}
+    ${ppl!=null&&ppl<60?html`<div class="callout warn rv" style="margin-bottom:14px">${icon('alert')}<div><b>有人物帧仅 ${ppl}%</b> —— 含无人出镜的产品展示型直播（画面只有商品和贴片），这类场次的妆造 / 站位指标天然为空，不是主播没打扮。</div></div>`:''}
+    <div class="row wrap" style="gap:10px;margin-bottom:14px">
+      <span class="pill acc">${V.n} 场</span><span class=pill>${num(V.frames)} 帧逐帧标注</span><span class=pill>${grp==='benchmark'?'仅标杆':grp==='own'?'仅我方':'全部'}</span>
+      ${ownNames[cat]?html`<span class="pill own">我方直播间：${ownNames[cat].join('、')}</span>`:''}</div>
+    <div class="g g3" style="align-items:start">
+      <div class="card rv"><div class=card-h><h3>妆造与服装</h3></div><div class=card-b>${distBars(dist,EX,['makeup.level','makeup.hair','outfit.type','outfit.color','outfit.style'])}</div></div>
+      <div class="card rv" style="--i:1"><div class=card-h><h3>站位与镜头</h3></div><div class=card-b>${distBars(dist,EX,['staging.shot','staging.hpos','staging.product','staging.gaze','staging.ratio'])}</div></div>
+      <div class=g style="align-content:start">
+        <div class="card rv" style="--i:2"><div class=card-h><h3>场景</h3></div><div class=card-b>${distBars(dist,EX,['scene.bg','scene.tone','scene.density','scene.light','scene.price_shown'])}</div></div>
+        <div class="card rv" style="--i:3"><div class=card-h><h3>道具使用率</h3><span class=note>出现在多少帧</span></div><div class=card-b>${props.length?props:empty('暂无','layers',1)}</div></div></div></div>
+    ${der.length?html`<div class=sect><h2>量化对比指标</h2><span class=note>跨场求均值，可用来比主播 · 条上的竖线是均值，浅色是区间</span></div>
+      <div class=dtiles>${der.map((x,i)=>{const lo=Math.min(x.min,x.avg),hi=Math.max(x.max,x.avg),sp=(hi-lo)||1,P=v=>((v-lo)/sp*100).toFixed(1)+'%';
+        const pc=/率|占比|一致性/.test(x.key)?'%':'';
+        return html`<div class="dtile rv" style="--i:${i}"><div class=k>${x.key}</div><div class=d>${VDESC[x.key]||''}</div><b>${x.avg}${pc?html`<small style="font-size:13px;color:var(--dim)">%</small>`:''}</b>
+          <div class=rng><i style="left:0;width:100%"></i><u style="left:${P(x.avg)}"></u></div><div class=mm><span>${x.min}</span><span>${x.n} 场</span><span>${x.max}</span></div></div>`})}</div>`:''}
+    ${bo}`)}};
+
+ACT.sort=a=>{const k=a.dataset.k,cur=R.q.get('o')||'push_pct',d=R.q.get('d')||'desc';patch({o:k,d:cur===k&&d==='desc'?'asc':'desc'})};
+VIEWS.talk=async q=>{
+  const c=q.get('c')||'',grp=q.get('grp')||'',o=q.get('o')||'push_pct',d=q.get('d')||'desc';
+  const {cats,T,all}=await API.talk(c,grp);
+  const top=head(html`${icon('wave')}谁在逼单、谁在陪聊`,'话术量化','按时间轴把话术切成塑品 / 逼单 / 互动三类，看结构、看促单密度、看空窗',
+    html`${chipsQ('c',c,[['','全部品类'],...cats.map(x=>[x.category,x.category,x.n])])}${segQ('grp',grp,[['','全部'],['benchmark','标杆'],['own','我方']])}`);
+  if(!cats.length)return {title:'话术量化',html:page(html`${top}<div class=card>${empty('还没有话术量化数据。跑 scripts/talk_metrics.py 后这里出榜','wave')}</div>`)};
+  if(!T||!T.n)return {title:'话术量化',html:page(html`${top}<div class=card>${empty('该范围还没有量化过的场次','wave')}</div>`)};
+  const bAvg={};(all.length?all:T.rows).filter(r=>r.group==='benchmark').forEach(r=>{const a=bAvg[r.category]=bAvg[r.category]||{n:0,p:0,s:0,i:0};a.n++;a.p+=r.product_pct;a.s+=r.push_pct;a.i+=r.interact_pct});
+  Object.values(bAvg).forEach(a=>{a.p/=a.n;a.s/=a.n;a.i/=a.n});
+  const rows=T.rows.slice().sort((x,y)=>{const A=x[o],B=y[o];const v=typeof A==='string'?String(A).localeCompare(String(B)):(A||0)-(B||0);return d==='asc'?v:-v});
+  const th=(k,l,cls,st)=>html`<th class="sortable ${cls||''} ${o===k?'sorted':''}" data-act=sort data-k="${k}" style="${st||''}">${l}${o===k?(d==='asc'?' ↑':' ↓'):''}</th>`;
+  const gap=r=>{if(r.group!=='own')return html`<span class=muted>—</span>`;const b=bAvg[r.category];if(!b)return html`<span class=muted>无同品类标杆</span>`;
+    const f=(l,v,base)=>{const x=Math.round(v-base);return html`<span style="margin-right:8px">${l}<b style="color:${x>=0?'var(--ok)':'var(--warn)'}">${x>0?'+':''}${x}</b></span>`};
+    return html`<span style="font-size:12px">${f('塑',r.product_pct,b.p)}${f('逼',r.push_pct,b.s)}${f('互',r.interact_pct,b.i)}</span>`};
+  const byCat={};(all.length?all:T.rows).forEach(r=>{(byCat[r.category]=byCat[r.category]||[]).push(r)});
+  return {title:'话术量化',html:page(html`${top}
+    <div class="card rv"><div class=card-h><h3>话术结构对比</h3><span class=note>${T.n} 场 · ${c||'全部品类'} · 点表头排序</span>
+      <div class=r>${legend([['塑品','var(--c-p)'],['逼单','var(--c-s)'],['互动','var(--c-i)'],['其他','var(--c-o)']])}</div></div>
+      <div class=tblwrap style="margin-top:8px"><table class=tbl><thead><tr>${th('name','直播间')}<th style="min-width:220px">结构</th>
+        ${th('product_pct','塑品','n','color:var(--c-p)')}${th('push_pct','逼单','n','color:var(--warn)')}${th('interact_pct','互动','n','color:var(--ok)')}
+        ${th('push_per_min','逼单 次/分','n')}${th('push_span_avg','单次时长','n')}${th('push_gap_max','最长空窗','n')}<th>最常用逼单</th><th>我方 vs 同品类标杆</th></tr></thead>
+      <tbody>${rows.map(r=>html`<tr class=link data-act=nav data-h="${href('s',{p:r.path})}"><td style="white-space:nowrap">${grpPill(r.group)} <b style="font-weight:600;margin-left:4px">${r.name}</b></td>
+        <td>${stack([{v:r.product_pct,c:'var(--c-p)',n:'塑品'},{v:r.push_pct,c:'var(--c-s)',n:'逼单'},{v:r.interact_pct,c:'var(--c-i)',n:'互动'},{v:r.other_pct,c:'var(--c-o)',n:'其他'}])}</td>
+        <td class=n>${r.product_pct}%</td><td class=n>${r.push_pct}%</td><td class=n>${r.interact_pct}%</td><td class=n>${r.push_per_min}</td>
+        <td class=n>${Math.round(r.push_span_avg||0)}s</td><td class="n ${(r.push_gap_max||0)>120?'wrn':''}">${Math.round(r.push_gap_max||0)}s</td>
+        <td style="font-size:12.5px">${r.push_top||'—'}</td><td>${gap(r)}</td></tr>`)}</tbody>
+      ${T.avg?html`<tfoot><tr><td>同品类均值</td><td></td><td class=n>${T.avg.product_pct}%</td><td class=n>${T.avg.push_pct}%</td><td class=n>${T.avg.interact_pct}%</td><td class=n>${T.avg.push_per_min}</td><td colspan=4></td></tr></tfoot>`:''}
+      </table></div>
+      <div class=card-b style="padding-top:10px"><div class=muted style="font-size:12px">读法：逼单占比高 = 促单密；互动占比高 = 陪聊多；「最长空窗」是整场连续没提促单的最长时间，越长越可能错过下单时机（超 120 秒标黄）</div></div></div>
+    <div class=sect><h2>品类话术特征</h2><span class=note>跨品类看「这个品类该重什么」</span></div>
+    <div class=plays>${Object.keys(byCat).map((k,i)=>{const a=byCat[k],n=a.length,m=x=>Math.round(a.reduce((s,y)=>s+(y[x]||0),0)/n);
+      return html`<div class="play rv" style="--i:${i}"><h4>${k}<small>${n} 场</small></h4>
+        <div style="margin:12px 0 10px">${stack([{v:m('product_pct'),c:'var(--c-p)',n:'塑品'},{v:m('push_pct'),c:'var(--c-s)',n:'逼单'},{v:m('interact_pct'),c:'var(--c-i)',n:'互动'}],1)}</div>
+        <div class="row" style="justify-content:space-between;font-size:12px;color:var(--dim)"><span>塑品 <b style="color:var(--fg)">${m('product_pct')}%</b></span><span>逼单 <b style="color:var(--fg)">${m('push_pct')}%</b></span><span>互动 <b style="color:var(--fg)">${m('interact_pct')}%</b></span></div></div>`})}</div>`)}};
+
+function calendar(dates){
+  if(!dates||!dates.length)return '';
+  const set=new Set(dates),f=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const end=new Date(dates.reduce((a,b)=>a>b?a:b)+'T00:00:00'),beg=new Date(dates.reduce((a,b)=>a<b?a:b)+'T00:00:00');
+  const W=clamp(Math.ceil((end-beg)/864e5/7)+2,8,26);   // 按实际跨度定周数，不留半截空白
+  const start=new Date(end);start.setDate(end.getDate()-((end.getDay()+6)%7)-(W-1)*7);
+  let cells='',mon='',lastM=-1;
+  for(let w=0;w<W;w++){
+    const wd=new Date(start);wd.setDate(start.getDate()+w*7);
+    mon+='<span style="width:16px;flex:none;white-space:nowrap">'+(wd.getMonth()!==lastM?(wd.getMonth()+1)+'月':'')+'</span>';lastM=wd.getMonth();
+    for(let d=0;d<7;d++){const x=new Date(start);x.setDate(start.getDate()+w*7+d);
+      cells+=x>end?'<i class=pad></i>':'<i class="'+(set.has(f(x))?'on':'')+'" title="'+f(x)+(set.has(f(x))?' 上播':'')+'"></i>'}}
+  return raw('<div class=calm>'+mon+'</div><div class=cal>'+cells+'</div>')}
+INP.ank=a=>{const v=a.value.trim();$$('.anlist .ls a').forEach(el=>{el.hidden=!!v&&!el.dataset.k.includes(v.toLowerCase())})};
+VIEWS.anchor=async q=>{
+  const {list,name,A}=await API.anchor(q.get('n'));
+  const top=head(html`${icon('user')}人 · 场 · 分`,'主播分析','排班里的上播记录 + 采集场次的四级评分');
+  if(!list.length)return {title:'主播分析',html:page(html`${top}<div class=card>${empty('还没有主播上播数据。按 config/anchors.example.json 的格式填好 config/anchors.json 后这里出分析','user')}</div>`)};
+  const av=(n,s)=>html`<span class=av style="--h:${hue(n)};${s?'width:'+s+'px;height:'+s+'px;border-radius:'+Math.round(s/3)+'px;font-size:'+Math.round(s/2.4)+'px':''}">${(n||'?').slice(0,1)}</span>`;
+  const ls=html`<div class="card anlist"><div class=srch><label class=inwrap style="width:100%">${icon('search')}<input class=input data-inp=ank placeholder="搜主播名 / 直播间" style="width:100%" aria-label="搜主播"></label></div>
+    <div class=ls>${list.map(x=>html`<a href="${href('anchor',{n:x.name})}" class="${x.name===name?'on':''}" data-k="${(x.name+' '+(x.rooms||[]).join(' ')).toLowerCase()}">${av(x.name)}<div style="min-width:0"><b>${x.name}</b><small>${(x.rooms||[])[0]||'—'}</small></div><span class=n>${x.n_dates}天</span></a>`)}</div></div>`;
+  let det;
+  if(!A)det=html`<div class=card>${empty(q.get('n')?'找不到主播「'+q.get('n')+'」，从左侧列表里选一位':'选择左侧主播，看上播信息与场次评分','user')}</div>`;
+  else{
+    const ss=A.sessions||[],sc=ss.map(x=>x.total_score).filter(v=>v!=null),avg=sc.length?r1(sc.reduce((a,b)=>a+b,0)/sc.length):null;
+    const LV=['外部形象','基础表达','核心销售','高阶结构'];
+    det=html`<div class="card rv"><div class=card-b style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:20px 22px">
+        ${av(A.name,64)}<div style="flex:1;min-width:200px"><h2 style="font-size:22px">${A.name}</h2>
+        <div class=chips style="margin-top:8px">${(A.rooms||[]).map(r=>html`<span class=pill>${r}</span>`)}</div></div>
+        <div class=kpis style="flex:2;min-width:320px;grid-template-columns:repeat(3,1fr)">
+          <div class="kpi sm"><i>上播天数</i><b>${cnt(A.n_dates)}</b></div>
+          <div class="kpi sm"><i>采集场次</i><b>${cnt(ss.length)}</b></div>
+          <div class="kpi sm"><i>平均得分</i><b style="color:${scoreC(avg)}">${avg==null?'—':avg}</b></div></div></div></div>
+      <div class="card rv" style="--i:1;margin-top:14px"><div class=card-h><h3>上播日历</h3><span class=note>最近 ${Math.min((A.dates||[]).length,30)} 次上播</span></div>
+        <div class=card-b>${calendar((A.dates||[]).slice(0,30))}</div></div>
+      <div class=sect><h2>采集场次评分</h2><span class=note>${ss.length} 场</span></div>
+      ${ss.length?html`<div class=rounds>${ss.map((x,i)=>{const lv=x.level_scores||{};
+        return html`<a class="rcard rv" style="--i:${i}" href="${href('s',{p:x.path})}"><div class=row style="gap:14px">${ring(x.total_score,10,{size:64,sw:6,fs:18})}
+          <div style="min-width:0;flex:1"><b style="font-size:14px">${x.name}</b><div class=muted style="font-size:12px">${dayOf(x.started)} · ${dur(x.elapsed)}</div>
+          ${x.worst?html`<div style="font-size:12px;margin-top:4px">短板：<b class=wrn>${x.worst}</b></div>`:''}</div></div>
+          <div class=sc4>${LV.map(k=>html`<div>${k.slice(0,2)} <b style="color:${scoreC(lv[k])}">${lv[k]==null?'—':lv[k]}</b><i>${[2,4,6,8,10].map(t=>html`<u class="${lv[k]!=null&&lv[k]>=t-1?'on':''}"></u>`)}</i></div>`)}</div></a>`})}</div>`
+      :html`<div class=card>${empty('这位主播还没有可分析的场次','film')}</div>`}`}
+  return {title:'主播分析'+(A?' · '+A.name:''),html:page(html`${top}<div class=anlay>${ls}<div style="min-width:0">${det}</div></div>`),
+    mount:root=>{countUp(root);const on=$('.anlist a.on',root);if(on)on.scrollIntoView({block:'center'})}}};
+
+const KIND=[['watch','持续监控这个直播间','live','长期采集 + 自动分析'],['diagnose','给某一场出诊断','target','单场深度诊断报告'],
+  ['drill','给某位主播出训练卡','user','这周练什么、照谁练'],['clip','分析某个时段的片段','film','只看一段，填时段']];
+const sameOrigin=u=>{if(!u)return false;try{const x=new URL(u,location.href);
+  return /^https?:$/.test(x.protocol)&&x.origin===location.origin}catch(e){return false}};
+ACT.asksubmit=async a=>{
+  const g=id=>{const e=$('#'+id);return e?e.value.trim():''};
+  const k=$('input[name=askKind]:checked');
+  const body={kind:k?k.value:'watch',room_name:g('askRoom'),room_id:g('askRid'),anchor:g('askAnchor'),time_range:g('askRange'),note:g('askNote')};
+  if(!body.room_name&&!body.room_id&&!body.anchor){toast('至少填一个：直播间名、房间号，或主播名','alert');return}
+  a.disabled=true;a.textContent='提交中…';
+  try{await API.ask('/requests','POST',body);toast('已提交，本机守护会来取单');route()}
+  catch(e){toast('提交失败：'+(e.message||e),'alert');a.disabled=false;a.textContent='提交'}};
+VIEWS.ask=async()=>{
+  let rows=null,err=null;
+  try{rows=(await API.ask('/requests?limit=30')).rows||[]}catch(e){err=String(e.message||e)}
+  const ST={pending:['warn','待处理'],running:['acc','进行中'],done:['ok','已完成'],failed:['bad','没做成']};
+  const local=/^(localhost|127\.)/.test(location.hostname);
+  return {title:'提需求',html:page(html`${head(html`${icon('send')}运营下单 · 本机执行 · 结果回写`,'提需求','要监控新直播间、要某场诊断、要训练卡，都在这里提')}
+    <div class="card rv"><div class=card-b style="padding:20px 22px">
+      <div class=lbl>要做什么</div>
+      <div class=kinds>${KIND.map((k,i)=>html`<label><input type=radio name=askKind value="${k[0]}" ${i===0?raw('checked'):''}><span class=bx>${icon(k[2])}</span><span><b>${k[1]}</b><small>${k[3]}</small></span></label>`)}</div>
+      <div class=lbl style="margin-top:20px">对象</div>
+      <div class=fgrid>
+        <label>直播间名<input class=input id=askRoom placeholder="例：某某官方旗舰店"></label>
+        <label>抖音房间号<input class=input id=askRid placeholder="有就填，能省一步" inputmode=numeric></label>
+        <label>主播名<input class=input id=askAnchor placeholder="选填"></label>
+        <label>时段<input class=input id=askRange placeholder="14:00-14:30，只做片段时填"></label>
+        <label style="grid-column:1/-1">备注<input class=input id=askNote placeholder="选填"></label></div>
+      <div class=row style="margin-top:18px"><button class=btn data-act=asksubmit>${icon('send')}提交</button><span class=muted style="font-size:12px">直播间名 / 房间号 / 主播名至少填一个</span></div></div></div>
+    <div class=sect><h2>已提交</h2>${rows?html`<span class=note>${rows.filter(r=>r.id).length} 条</span>`:''}</div>
+    ${err?html`<div class=card>${empty(local?'本机预览看不到已提交的需求 —— 提交接口在平台上，要到公网站用。':'取不到已提交的需求：'+err,'send')}</div>`
+      :rows.filter(r=>r.id).length?html`<div class="card rv"><div class=tblwrap><table class=tbl><thead><tr><th>状态</th><th>类型</th><th>对象</th><th>结果</th><th class=n>提交</th></tr></thead><tbody>
+        ${rows.filter(r=>r.id).map(r=>{const s=ST[r.status]||['',r.status];const kn=(KIND.find(k=>k[0]===r.kind)||[,r.kind])[1];
+          return html`<tr><td><span class="pill ${s[0]}">${s[1]}</span></td><td>${kn}</td><td>${[r.room_name,r.room_id,r.anchor,r.time_range].filter(Boolean).join(' · ')||'—'}</td>
+            <td style="max-width:420px;font-size:12.5px">${r.message||''}${sameOrigin((r.links||[])[0])?html` <a href="${r.links[0]}" style="color:var(--acc);font-weight:600">打开 →</a>`:''}</td>
+            <td class=n style="font-size:12px;color:var(--dim)">${(r.created_by||'')+' '+(r.created_at||'').slice(5,16)}</td></tr>`})}</tbody></table></div></div>`
+      :html`<div class=card>${empty('还没有人提过需求','send')}</div>`}`)}};
+
+const DOCK={health:['check','产出体检'],qabook:['msg','问题手册'],drill:['flag','训练卡'],audit:['eye','视觉抽检']};
+const fmtDay=t=>{if(!t)return '';const d=new Date(t*1000);return (d.getMonth()+1)+'月'+d.getDate()+'日 '+pad(d.getHours())+':'+pad(d.getMinutes())};
+function metaPills(meta){
+  return String(meta||'').split(/\s*[｜|]\s*/).filter(Boolean).map(x=>{
+    const m=x.match(/未回应率\s*([\d.]+)%/);
+    if(m){const v=Number(m[1]);return html`<span class="pill ${v>=40?'bad':v>=20?'warn':'ok'}">${x}</span>`}
+    return html`<span class=pill>${x}</span>`})}
+const unansRate=meta=>{const m=String(meta||'').match(/未回应率\s*([\d.]+)%/);return m?Number(m[1]):null};
+INP.dockw=a=>{
+  const v=a.value.trim().toLowerCase();let n=0;
+  $$('.dcard[data-k]').forEach(el=>{el.hidden=!!v&&!el.dataset.k.includes(v);if(!el.hidden)n++});
+  $$('[data-dsect]').forEach(s=>{s.hidden=!$$('.dcard',s).some(x=>!x.hidden)});
+  const e=$('#docempty');if(e)e.hidden=n>0};
+VIEWS.docs=async q=>{
+  const gs=await API.docsIndex(),g=q.get('g')||'';
+  const top=head(html`${icon('file')}给主播和运营的实际产出`,'交付物','消费者问题手册 · 训练卡 · 产出体检 · 视觉抽检 —— 这套系统最终交出去的东西',
+    html`<label class=inwrap>${icon('search')}<input class=input data-inp=dockw placeholder="搜直播间 / 主播 / 品类" style="width:240px" aria-label="搜交付物"></label>`);
+  if(!gs.length)return {title:'交付物',html:page(html`${top}<div class=card>${empty('还没有交付物。跑 scripts/qa_book.py、drill_plan.py 后这里出文件','file')}</div>`)};
+  const hg=gs.find(x=>x.key==='health'),H=hg&&hg.items[0],rest=gs.filter(x=>x.key!=='health');
+  const total=rest.reduce((a,x)=>a+x.items.length,0);
+  let hero='';
+  if(H){const st=H.fail?'bad':H.warn?'warn':'ok';
+    hero=html`<div class="card rv" style="margin-bottom:18px"><div class=health>
+      <div class="st ${st}">${icon(st==='ok'?'check':'alert')}</div>
+      <div style="min-width:0"><div class=eyebrow style="margin-bottom:4px">产出体检 · ${fmtDay(H.mtime)}</div>
+        <h2>${st==='ok'?'昨天的采集和分析全部正常':st==='warn'?H.warn+' 项需要关注':H.fail+' 项失败，需要处理'}</h2>
+        <div class="row wrap" style="gap:6px;margin-top:8px"><span class="pill ok">PASS ${H.pass}</span>${H.warn?html`<span class="pill warn">WARN ${H.warn}</span>`:''}${H.fail?html`<span class="pill bad">FAIL ${H.fail}</span>`:''}
+          <span class=muted style="font-size:12px">只问产出不问状态 —— 服务全绿不等于有东西出来</span></div></div>
+      <a class=btn href="${href('doc',{k:'health',f:'health'})}">${icon('file')}看体检报告</a></div></div>`}
+  const card=(it,i)=>{
+    const k=DOCK[it.key]||['file',''],r=unansRate(it.meta),ext=it.kind==='html';
+    const inner=html`<div class=h><span class="bx ${it.key}">${icon(k[0])}</span><div style="min-width:0"><b>${it.name}</b>
+        <div class=muted style="font-size:11.5px;margin-top:2px">${k[1]}</div></div></div>
+      ${it.meta?html`<div class=mp>${metaPills(it.meta.replace(/\s*[｜|]\s*未回应率[^｜|]*/,''))}</div>`:''}
+      ${r!=null?html`<div class=rate><span>未回应率</span><i><u style="width:${clamp(r,0,100)}%;--rc:${r>=40?'var(--bad)':r>=20?'var(--c-s)':'var(--ok)'}"></u></i><b style="color:${r>=40?'var(--bad)':r>=20?'var(--warn)':'var(--ok)'};font-size:12px">${r}%</b></div>`:''}
+      <div class=ft><span>${fmtDay(it.mtime)} 更新</span><span class=go>${ext?html`打开工具${icon('ext')}`:html`阅读${icon('arrow')}`}</span></div>`;
+    const key=(it.name+' '+(it.meta||'')+' '+k[1]).toLowerCase();
+    return ext?html`<a class="dcard rv" style="--i:${i}" href="${API.docPage(it)}" target=_blank rel=noopener data-k="${key}">${inner}</a>`
+      :html`<a class="dcard rv" style="--i:${i}" href="${href('doc',{k:it.key,f:it.file})}" data-k="${key}">${inner}</a>`};
+  const shown=rest.filter(x=>!g||x.key===g);
+  return {title:'交付物',html:page(html`${top}${hero}
+    <div class="row wrap" style="margin-bottom:6px">${chipsQ('g',g,[['','全部',total],...rest.map(x=>[x.key,x.title,x.items.length])])}</div>
+    ${shown.map(x=>{
+      const items=x.key==='qabook'?x.items.slice().sort((a,b)=>(unansRate(b.meta)||0)-(unansRate(a.meta)||0)):x.items;
+      return html`<section data-dsect><div class=sect><h2>${x.title}</h2><span class=note>${x.items.length} 份 · ${x.desc}</span></div>
+        <div class=dgrid>${items.map(card)}</div></section>`})}
+    <div id=docempty hidden>${empty('没有匹配的交付物','search')}</div>`)}};
+
+function mdInline(t){
+  let s=esc(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/(^|[^*])\*([^*\s][^*]*)\*/g,'$1<em>$2</em>');
+  s=s.replace(/^（([^（）·]{1,24})·(\d{1,2}:\d{2}(?::\d{2})?)）/,'<span class=ts>$2</span><span class=src>$1</span>')
+     .replace(/^（(\d{1,2}:\d{2}(?::\d{2})?)）/,'<span class=ts>$1</span>');
+  return s}
+function mdRender(src){
+  const L=String(src||'').replace(/\r/g,'').split('\n');
+  let out='',tbl=null,ul=false,h1='',meta='',n=0;const toc=[];
+  const endT=()=>{if(!tbl)return;const[hd,...rows]=tbl;
+    const num=c=>/^[-+]?[\d.,]+%?$/.test(c.trim());
+    out+='<div class=tblwrap><table><thead><tr>'+hd.map(c=>'<th>'+mdInline(c)+'</th>').join('')+'</tr></thead><tbody>'+
+      rows.map(r=>'<tr>'+r.map(c=>'<td'+(num(c)?' class=num':'')+'>'+mdInline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';tbl=null};
+  const endU=()=>{if(ul){out+='</ul>';ul=false}};
+  for(const raw0 of L){
+    const ln=raw0.replace(/\s+$/,'');
+    if(/^\|.*\|$/.test(ln)){endU();const cells=ln.slice(1,-1).split('|').map(c=>c.trim());
+      if(cells.every(c=>/^:?-{2,}:?$/.test(c)))continue;(tbl=tbl||[]).push(cells);continue}
+    endT();
+    if(!ln.trim()){endU();continue}
+    let m=ln.match(/^(#{1,4})\s+(.*)$/);
+    if(m){endU();const lv=m[1].length;
+      if(lv===1&&!h1){h1=m[2];continue}
+      const id='h-'+(++n);if(lv<=3)toc.push({id,lv,t:m[2]});
+      out+='<h'+Math.max(2,lv)+' id="'+id+'">'+mdInline(m[2])+'</h'+Math.max(2,lv)+'>';continue}
+    if(ln.startsWith('>')){endU();const t=ln.slice(1).trim();
+      if(!meta&&!toc.length){meta=t.replace(/\*\*(.+?)\*\*/g,'$1');continue}
+      out+='<blockquote>'+mdInline(t)+'</blockquote>';continue}
+    if(/^-{3,}$/.test(ln.trim())){endU();out+='<hr>';continue}
+    m=ln.match(/^(\s*)[-*]\s+(.*)$/);
+    if(m){if(!ul){out+='<ul>';ul=true}out+='<li'+(m[1].length>=2?' class=sub':'')+'>'+mdInline(m[2])+'</li>';continue}
+    endU();out+='<p>'+mdInline(ln)+'</p>'}
+  endT();endU();
+  return {h1,meta,body:out,toc}}
+function healthRender(src){
+  let out='';const toc=[];let n=0,title='';
+  for(const ln of String(src||'').replace(/\r/g,'').split('\n')){
+    if(!ln.trim())continue;
+    if(!title){title=ln.trim();continue}
+    const h=ln.match(/^\s*──\s*(.+)$/);
+    if(h){const id='h-'+(++n);toc.push({id,lv:2,t:h[1]});out+='<h2 id="'+id+'">'+esc(h[1])+'</h2>';continue}
+    const s=ln.match(/^\s*\[(PASS|WARN|FAIL)\]\s*(.*)$/);
+    if(s){out+=put(html`<div class=hl><span class="pill ${s[1]==='PASS'?'ok':s[1]==='WARN'?'warn':'bad'}">${s[1]}</span><span>${s[2]}</span></div>`);continue}
+    out+='<div class=hpre>'+esc(ln.replace(/^\s+/,''))+'</div>'}
+  return {h1:'产出体检',meta:title,body:out,toc}}
+ACT.toc=a=>{const el=document.getElementById(a.dataset.id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})};
+ACT.copyraw=()=>{const t=CUR_DOC||'';(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('全文已复制（Markdown）'),()=>toast('浏览器不让复制','alert'))};
+let CUR_DOC='';
+VIEWS.doc=async q=>{
+  const k=q.get('k'),f=q.get('f');if(!k||!f)return {redirect:['docs',{}]};
+  const gs=await API.docsIndex();
+  const it=(gs.find(g=>g.key===k)||{items:[]}).items.find(x=>x.file===f)||(k==='health'?{key:'health',file:'health',name:'产出体检',kind:'txt'}:null);
+  if(!it)return {title:'交付物',html:page(html`<div class=card>${empty('找不到这份文件，可能已被重新生成','file')}</div>`)};
+  if(it.kind==='html')return {title:it.name,html:page(html`<div class=card>${empty(html`这是一个交互工具，<a href="${API.docPage(it)}" target=_blank rel=noopener style="color:var(--acc)">在新页面打开 ↗</a>`,'eye')}</div>`)};
+  const src=await API.text(API.docRaw(it));CUR_DOC=src;
+  const D=k==='health'?healthRender(src):mdRender(src),K=DOCK[k]||['file',''];
+  const title=D.h1||it.name;
+  return {title:it.name,html:page(html`
+    <div class=ph><div class=t><div class=eyebrow>${icon(K[0])}${K[1]} · ${fmtDay(it.mtime)} 更新</div><h1>${title}</h1>
+      ${D.meta?html`<div class="row wrap" style="gap:6px;margin-top:10px">${metaPills(D.meta)}</div>`:''}</div>
+      <div class=tools><a href="#/docs" data-act=back class="btn ghost">${icon('left')}返回</a>
+        <button class="btn ghost" data-act=copyraw>${icon('copy')}复制全文</button>
+        <a class=btn href="${API.docPage(it)}" target=_blank rel=noopener>${icon('ext')}新页面打开</a></div></div>
+    <div class=docl><article class="card prose rv">${raw(D.body)}</article>
+      ${D.toc.length>1?html`<nav class="card toc rv" style="--i:1" aria-label="目录"><div class=lbl style="margin:4px 10px 8px">目录</div>
+        ${D.toc.map(x=>html`<a href="#" class="${x.lv===3?'l3':''}" data-act=toc data-id="${x.id}">${x.t.replace(/\*\*/g,'')}</a>`)}</nav>`:''}</div>`),
+    mount:root=>{
+      const links=$$('.toc a',root);if(!links.length)return;
+      const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){
+        links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id));break}},{root:$('#main'),rootMargin:'0px 0px -70% 0px'});
+      $$('.prose [id^="h-"]',root).forEach(h=>io.observe(h));CLEAN.push(()=>io.disconnect())}}};
+
+const STABS=[['overview','概览'],['rounds','分轮诊断'],['script','讲解逻辑'],['audience','观众洞察'],
+  ['visual','画面道具'],['vmetrics','视觉量化'],['tmetrics','话术量化']];
+let CUR=null;
+
+function tlSvg(s,T,W){
+  const flow=s.flow||[],X=t=>t/T*W,f1=(v)=>v.toFixed(1);
+  const Y={f0:26,f1:84,d0:92,d1:118,k0:124,ax:150};
+  let o='';
+  const steps=[30,60,120,300,600,900,1200,1800,3600],want=Math.max(3,Math.floor(W/95));
+  const step=steps.find(x=>T/x<=want)||3600;
+  for(let t=0;t<=T+1;t+=step){const x=f1(X(t));
+    o+='<line class=tl-gl x1="'+x+'" x2="'+x+'" y1="22" y2="136"/><text class=tl-ax x="'+x+'" y="'+Y.ax+'" text-anchor="'+(t===0?'start':'middle')+'">'+mmss(t)+'</text>'}
+  (s.rounds||[]).forEach((r,i)=>{const x=X(r.start),w=Math.max(1,X(r.end)-x-1.5);
+    o+='<rect class="tl-rd'+(i%2?' b':'')+'" x="'+f1(x)+'" y="0" width="'+f1(w)+'" height="18" rx="5"/>';
+    if(w>26){const lab=('R'+r.idx+(w>100&&r.product?' '+r.product:''));o+='<text class=tl-rt x="'+f1(x+6)+'" y="12.5">'+esc(lab.slice(0,Math.max(2,Math.floor((w-8)/10.5))))+'</text>'}});
+  const maxc=Math.max(3,...flow.map(f=>(f.tags||[]).length)),uh=(Y.f1-Y.f0)/maxc;
+  flow.forEach((f,i)=>{
+    const x=X(f.start),x2=X(i+1<flow.length?flow[i+1].start:Math.min(T,f.start+30)),w=Math.max(1,x2-x-.8);
+    const c={product:0,sales:0,interact:0,risk:0};(f.tags||[]).forEach(t=>{if(t.dim in c)c[t.dim]++});
+    let y=Y.f1;
+    if(!(f.tags||[]).length)o+='<rect class=f-o x="'+f1(x)+'" y="'+(Y.f1-3)+'" width="'+f1(w)+'" height="3" rx="1.5"/>';
+    for(const[d,cl]of[['product','p'],['sales','s'],['interact','i'],['risk','r']])if(c[d]){const h=c[d]*uh;y-=h;
+      o+='<rect class=f-'+cl+' x="'+f1(x)+'" y="'+f1(y+.6)+'" width="'+f1(w)+'" height="'+f1(Math.max(1,h-1.2))+'" rx="1.5"/>'}});
+  const md=Math.max(1,...flow.map(f=>f.danmu_after||0)),dh=Y.d1-Y.d0;
+  flow.forEach((f,i)=>{if(!f.danmu_after&&!f.buy_after)return;
+    const x=X(f.start),x2=X(i+1<flow.length?flow[i+1].start:Math.min(T,f.start+30)),w=Math.max(1.5,x2-x-.8),h=Math.max(2,(f.danmu_after||0)/md*dh);
+    o+='<rect class=tl-dm x="'+f1(x)+'" y="'+f1(Y.d1-h)+'" width="'+f1(w)+'" height="'+f1(h)+'" rx="1"/>';
+    if(f.buy_after)o+='<circle class=tl-buy cx="'+f1(x+w/2)+'" cy="'+f1(Y.d1-h-4)+'" r="3"/>'});
+  (s.risk||[]).forEach(r=>{const x=X(r.t||0);o+='<path class=tl-rk d="M'+f1(x)+' '+Y.k0+'l5.5 10h-11z"/>'});
+  o+='<line class=tl-cur x1="0" x2="0" y1="0" y2="138"/>';
+  return '<svg width="'+W+'" height="156" viewBox="0 0 '+W+' 156">'+o+'</svg>'}
+function tlMount(root,s){
+  const box=$('#tlx',root);if(!box)return;
+  const flow=s.flow||[],starts=flow.map(f=>f.start);
+  const T=Math.max(s.elapsed||0,flow.length?flow[flow.length-1].start+30:0,60);
+  let W=0,last=-1,raf=0,lx=0;
+  const tip='<div class=tl-tip><img alt=""><div><div class=row style="gap:6px"><span class=ts></span><span class=muted style="font-size:11px"></span></div><div class=tx></div><div class=tg></div></div></div>';
+  const draw=()=>{W=Math.round(box.clientWidth);if(!W)return;box.innerHTML=tlSvg(s,T,W)+tip;last=-1};
+  draw();
+  const ro=new ResizeObserver(()=>{if(Math.round(box.clientWidth)!==W)draw()});ro.observe(box);CLEAN.push(()=>ro.disconnect());
+  const idxAt=t=>{let lo=0,hi=starts.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(starts[m]<=t){r=m;lo=m+1}else hi=m-1}return r};
+  const cur=t=>{const l=$('.tl-cur',box);if(l){const x=(t/T*W).toFixed(1);l.setAttribute('x1',x);l.setAttribute('x2',x)}};
+  const show=()=>{raf=0;const b=box.getBoundingClientRect(),x=clamp(lx-b.left,0,W),t=x/W*T;cur(t);
+    const tp=$('.tl-tip',box);if(!tp)return;   // 挂载时宽度为 0 还没画出来，等 ResizeObserver 补画
+    tp.style.left=clamp(x-150,-54,W-300)+'px';
+    const i=idxAt(t);$('.ts',tp).textContent=mmss(t);
+    const u=API.frame(s.path,t),im=$('img',tp);
+    if(u&&im.getAttribute('src')!==u)im.src=u;im.style.visibility=u?'':'hidden';
+    if(i!==last){last=i;const f=flow[i];
+      $('.muted',tp).textContent=f&&f.danmu_after?'弹幕 '+f.danmu_after+(f.buy_after?' · 购买 '+f.buy_after:''):'';
+      $('.tx',tp).textContent=f?(f.text||''):'（这段没有转写）';
+      $('.tg',tp).innerHTML=f?put((f.tags||[]).slice(0,4).map(g=>html`<span class="tag d-${g.dim}">${g.name}</span>`)):''}};
+  box.addEventListener('pointermove',e=>{lx=e.clientX;box.classList.add('hot');if(!raf)raf=requestAnimationFrame(show)});
+  box.addEventListener('pointerleave',()=>box.classList.remove('hot'));
+  box.addEventListener('click',e=>{const b=box.getBoundingClientRect(),t=(e.clientX-b.left)/W*T,i=idxAt(t);if(i>=0)jumpSeg(i)});
+  const trl=$('.trl',root);
+  if(trl)trl.addEventListener('pointerover',e=>{const sg=e.target.closest('.sg');if(sg)cur(Number(sg.dataset.t))})}
+function jumpSeg(i){
+  const el=$('#sg-'+i);if(!el)return;
+  const list=el.closest('.trl');if(list&&list.dataset.f){list.dataset.f='';$$('[data-act=tf]').forEach(b=>b.classList.toggle('on',!b.dataset.f))}
+  $$('.trl .sg[hidden]').forEach(x=>x.hidden=false);const q=$('[data-inp=trq]');if(q)q.value='';
+  const sc=el.closest('.card-b');el.closest('.card').scrollIntoView({block:'nearest',behavior:'smooth'});
+  if(sc)sc.scrollBy({top:el.getBoundingClientRect().top-sc.getBoundingClientRect().top-sc.clientHeight/3,behavior:'smooth'});
+  el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+ACT.tf=a=>{const l=$('.trl');if(!l)return;l.dataset.f=a.dataset.f||'';$$('[data-act=tf]').forEach(b=>b.classList.toggle('on',b===a))};
+ACT.sgopen=a=>a.closest('.sg').classList.toggle('open');
+INP.trq=debounce(a=>{const v=a.value.trim().toLowerCase();let n=0;
+  $$('.trl .sg').forEach(el=>{el.hidden=!!v&&!el.dataset.q.includes(v);if(!el.hidden)n++});
+  const c=$('#trn');if(c)c.textContent=v?n+' 段匹配':''},100);
+
+function sOverview(s){
+  const flow=s.flow||[],m=s.metrics||{};
+  const fg=gal(flow.map(f=>({src:API.frame(s.path,f.start),cap:(f.text||'').slice(0,60),sub:mmss(f.start)})));
+  const tdim={};flow.forEach(f=>(f.tags||[]).forEach(t=>{tdim[t.name]=t.dim}));
+  const cnts={product:0,sales:0,interact:0,risk:0,danmu:0};
+  const segs=flow.map((f,i)=>{const ds=[...new Set((f.tags||[]).map(t=>t.dim))];ds.forEach(d=>cnts[d]=(cnts[d]||0)+1);if(f.danmu_after)cnts.danmu++;
+    return html`<div class="sg ${ds.map(d=>'h-'+d).join(' ')} ${f.danmu_after?'h-danmu':''}" id="sg-${i}" data-t="${f.start}" data-q="${(f.text||'').toLowerCase()}">
+      ${API.frame(s.path,f.start)?html`<img loading=lazy src="${API.frame(s.path,f.start)}" alt="" data-act=lb data-g="${fg}" data-i="${i}">`:html`<span></span>`}
+      <div style="min-width:0"><div class=hd><span class=ts>${mmss(f.start)}</span>${f.danmu_after?html`<span class=r>${icon('msg')} ${f.danmu_after}${f.buy_after?html` · <b class=pos>购买 ${f.buy_after}</b>`:''}</span>`:''}</div>
+      <div class=tx data-act=sgopen title="点击展开 / 收起">${f.text}</div><div>${(f.tags||[]).map(t=>html`<span class="tag d-${t.dim}">${t.name}</span>`)}</div></div></div>`});
+  const dims=s.dims||[],top=s.top||[],topMax=Math.max(1,...top.map(t=>t.n));
+  const real=(s.danmu_real||[]).slice().reverse(),spam=s.danmu_spam||[];
+  const fr=s.frame_secs||[],MAX=160,pick=fr.length>MAX?Array.from({length:MAX},(_,i)=>fr[Math.floor(i*fr.length/MAX)]):fr;
+  const wg=gal(pick.map(x=>({src:API.frame(s.path,x),cap:s.name||'',sub:mmss(x)})));
+  return html`
+    <div class="card rv" style="z-index:3"><div class=card-h><h3>全场时间轴</h3><span class=note>悬停看当时画面 · 点击跳到原话</span>
+      <div class=r>${legend([['产品力','var(--c-p)'],['销售力','var(--c-s)'],['互动力','var(--c-i)'],['风险','var(--c-r)'],['购买意向','var(--ok)']])}</div></div>
+      <div class=card-b style="padding-top:22px">${flow.length?html`<div class=tl><div class=tl-y><span style="top:3px">轮次</span><span style="top:46px">话术</span><span style="top:98px">弹幕</span><span style="top:122px">风险</span></div><div class=tl-x id=tlx></div></div>`:empty('这场还没有转写','mic',1)}</div></div>
+    <div class="g gs" style="margin-top:14px;align-items:start">
+      <div class="card scroll rv" style="--i:1;--mh:880px"><div class=card-h style="flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)"><h3>逐字稿</h3><span class=note>${flow.length} 段</span>
+        <div class=r style="flex-wrap:wrap"><div class=seg>${[['','全部',flow.length],['product','产品',cnts.product],['sales','销售',cnts.sales],['interact','互动',cnts.interact],['danmu','有弹幕',cnts.danmu],...(cnts.risk?[['risk','风险',cnts.risk]]:[])].map(([f,l,n],i)=>html`<button class="${i===0?'on':''}" data-act=tf data-f="${f}">${l} <span class=n>${n}</span></button>`)}</div>
+        <label class=inwrap>${icon('search')}<input class=input data-inp=trq placeholder="搜原话" style="width:140px;height:32px" aria-label="搜原话"></label><span class="muted mono" id=trn style="font-size:11.5px"></span></div></div>
+        <div class="card-b flush"><div class=trl data-f="">${segs.length?segs:empty('暂无转写','mic',1)}</div></div></div>
+      <div class=g style="align-content:start">
+        <div class="card rv" style="--i:2"><div class=card-h><h3>能力覆盖</h3><span class=note>用到几种手法</span></div><div class=card-b>
+          ${dims.map((d,i)=>meter(d.name,d.used+'/'+d.total,d.total?d.used/d.total:0,{color:d.dim==='risk'&&d.used?'var(--bad)':DIMC[d.dim],i}))}
+          <div class=divider></div>
+          <div class=row style="justify-content:space-between;font-size:12.5px;padding:3px 0"><span class=muted>紧迫感手法</span><b class=mono>${m['紧迫感手法_覆盖']||'—'}</b></div>
+          <div class=row style="justify-content:space-between;font-size:12.5px;padding:3px 0"><span class=muted>价格手法</span><b class=mono>${m['价格手法_覆盖']||'—'}</b></div></div></div>
+        ${top.length?html`<div class="card rv" style="--i:3"><div class=card-h><h3>话术标签 TOP</h3></div><div class=card-b>
+          ${top.map((t,i)=>meter(t.name,t.n,t.n/topMax,{color:DIMC[tdim[t.name]]||'var(--acc)',i,lw:78}))}</div></div>`:''}
+        ${(s.risk||[]).length?html`<div class="card rv" style="--i:4;border-color:color-mix(in srgb,var(--bad) 35%,var(--line))"><div class=card-h><h3 style="color:var(--bad)">${icon('alert')} 违规风险</h3><span class=note>${s.risk.length} 处</span></div><div class=card-b>
+          ${s.risk.map(x=>html`<div class="item bad"><div class=h>${x.name}<span class=pill>${x.src||''}</span></div><div class=quote><span class=ts>${mmss(x.t)}</span>${x.text}</div></div>`)}</div></div>`:''}
+        <div class="card scroll rv" style="--i:5;--mh:460px"><div class=card-h><h3>观众弹幕</h3><span class=note>真人 ${real.length} · 刷屏 ${s.spam_total||0}</span></div>
+          <div class="card-b flush"><div class=dmf>${real.length?real.map(x=>html`<div><span class=nk>${x.nick}</span>${x.reply_to?html`<span class=at>→@${x.reply_to}</span>`:''}${x.text}</div>`):empty('暂无真人弹幕','msg',1)}</div>
+          ${spam.filter(Boolean).length?html`<div class=lbl style="margin:14px 18px 6px">中控刷屏话术</div>${spam.filter(Boolean).map(x=>html`<div class=spam><b>×${x.n}</b><span>${x.text}</span></div>`)}`:''}</div></div>
+      </div></div>
+    ${pick.length?html`<details class="card rv" style="margin-top:14px"><summary class=card-h style="padding-bottom:14px">${icon('right','chev')}<h3>画面墙</h3><span class=note>${fr.length} 张截图${fr.length>MAX?' · 均匀抽 '+MAX+' 张':''}</span></summary>
+      <div class=card-b style="padding-top:0"><div class=wall>${pick.map((x,i)=>html`<button data-act=lb data-g="${wg}" data-i="${i}"><img loading=lazy src="${API.frame(s.path,x)}" alt=""><span>${mmss(x)}</span></button>`)}</div></div></details>`:''}`}
+
+function splitBar(txt){
+  const re=/([^→\-、，,\s(（]+)\s*[(（]\s*(\d+(?:\.\d+)?)\s*s?\s*[)）]/g,parts=[];let m;
+  while((m=re.exec(txt||'')))parts.push([m[1],Number(m[2])]);
+  if(parts.length<2)return html`<div style="font-size:13px">${txt||'—'}</div>`;
+  const tot=parts.reduce((a,b)=>a+b[1],0)||1,cols=['var(--c-p)','var(--c-s)','var(--c-i)','#8b5cf6','#06b6d4','#ec4899','#84cc16','var(--dim2)'];
+  return html`${stack(parts.map((p,i)=>({v:Math.round(p[1]/tot*100),c:cols[i%cols.length],n:p[0]})),1)}
+    <div class=legend style="margin-top:8px">${parts.map((p,i)=>html`<span style="--lc:${cols[i%cols.length]}">${p[0]} ${p[1]}s</span>`)}</div>`}
+function roundBody(rd){
+  const st=rd.structure||{},sc=rd.score||{},au=rd.audience||{};
+  const SC=[['product','产品力'],['sales','销售力'],['interact','互动力'],['pace','节奏力']];
+  return html`<div class="card"><div class=card-b style="display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:center">
+      ${radar(SC.map(x=>x[1]),[{vals:SC.map(x=>Number(sc[x[0]]||0)),color:'var(--acc)',label:1}],{size:220,max:5,pad:40})}
+      <div><div class=lbl>总评</div><div style="font-size:13.5px;line-height:1.75">${sc.comment||'—'}</div></div></div></div>
+    <div class=lbl style="margin-top:20px">循环完整性</div><div style="font-size:13px;line-height:1.7">${st.cycle||'—'}</div>
+    ${(st.missing||[]).length?html`<div class="callout warn" style="margin-top:10px">${icon('alert')}<div>缺环节：<b>${st.missing.join('、')}</b></div></div>`:''}
+    ${st.time_split?html`<div class=lbl>各环节时间配比</div>${splitBar(st.time_split)}`:''}
+    <div class="g g2" style="margin-top:6px"><div><div class=lbl>价格塑造</div><div style="font-size:13px;line-height:1.7">${rd.price_pitch||'—'}</div></div>
+      <div><div class=lbl>紧迫感手法</div>${(rd.urgency_moves||[]).length?rd.urgency_moves.map(u=>html`<div class="item warn"><div class=d>${u}</div></div>`):html`<div class=muted>—</div>`}</div></div>
+    <div class=lbl>行动指令 · ${rd.cta?rd.cta.count:'—'} 次${rd.cta&&rd.cta.clarity?' · '+rd.cta.clarity:''}</div>${((rd.cta||{}).examples||[]).map(e=>html`<div class=quote>${e}</div>`)}
+    <div class=lbl>讲解逻辑链</div>${(rd.logic_chains||[]).map(c=>html`<div class=item><div class=h>${c.point||''}<span class="tag d-product" style="margin:0">${c.method||''}</span></div><div class=x>${c.how||''}</div>${c.quote?html`<div class=quote><span class=ts>${mmss(c.t<0?0:c.t)}</span>${c.quote}</div>`:''}</div>`)}
+    <div class=lbl>问题</div>${(rd.problems||[]).length?rd.problems.map(p=>html`<div class="item ${p.severity==='高'?'bad':p.severity==='中'?'warn':'mute'}"><div class=h><span class="pill ${p.severity==='高'?'bad':p.severity==='中'?'warn':''}">${p.severity||''}</span>${p.problem||''}</div><div class=x>改法：${p.fix||''}</div></div>`):html`<div class=muted>无</div>`}
+    <div class=lbl>亮点</div>${(rd.highlights||[]).length?rd.highlights.map(h=>html`<div class="item ok"><div class=quote style="margin-top:0"><span class=ts>${mmss(h.t<0?0:h.t)}</span>${h.quote||''}</div><div class=x>好在：${h.why||''}</div></div>`):html`<div class=muted>无</div>`}
+    <div class=lbl>观众</div><div class=g style="gap:6px;font-size:13px"><div><span class=muted>关注：</span>${(au.concerns||[]).join('、')||'—'}</div><div><span class=muted>已答：</span>${(au.answered||[]).join('、')||'—'}</div><div style="color:var(--bad)"><span class=muted>漏答：</span>${(au.ignored||[]).join('、')||'—'}</div></div>`}
+ACT.round=a=>{
+  const s=CUR;if(!s)return;const i=Number(a.dataset.i),list=s.round_analysis||[];
+  const rd=i<0?list.filter(x=>x.idx===-1)[-i-1]:list.find(x=>x.idx===i);if(!rd){toast('这一轮还没做单轮分析','alert');return}
+  const mt=rd._meta||{},r=(s.rounds||[]).find(x=>x.idx===i)||{};
+  drawer(i<0?(mt.product||'人工指定时段'):'第 '+i+' 轮 · '+(mt.product||r.product||''),
+    (r.start!=null?mmss(r.start)+' – '+mmss(r.end)+' · ':'')+'时长 '+mmss(mt.dur||r.dur),roundBody(rd))};
+function sRounds(s){
+  const rs=s.rounds||[],done={};(s.round_analysis||[]).forEach(x=>{if(x.idx>=0)done[x.idx]=x});
+  const customs=(s.round_analysis||[]).filter(x=>x.idx===-1);
+  const card=(r,a)=>{const sc=a&&a.score,miss=a&&a.structure&&(a.structure.missing||[]).length?a.structure.missing:null;
+    return html`<button class="rcard rv ${a?'':'off'}" style="--i:${r.idx}" ${a?raw('data-act=round data-i="'+r.idx+'"'):raw('disabled')}>
+      <div class=h><b>R${r.idx}</b><span>${r.product||'未标注商品'}</span><em>${mmss(r.start)}–${mmss(r.end)}</em></div>
+      <p>${r.summary||''}</p>
+      <div class="row wrap" style="gap:6px">${r.has_price?html`<span class="pill acc">价格</span>`:''}${r.has_urgency?html`<span class="pill warn">紧迫</span>`:''}${r.has_demo?html`<span class="pill ok">演示</span>`:''}
+        ${miss?html`<span class="pill bad">缺 ${miss.join('、')}</span>`:''}${a?'':html`<span class=pill>未单轮分析</span>`}<span class=sp></span><span class="muted mono" style="font-size:11px">${mmss(r.dur)}</span></div>
+      ${sc?html`<div class=sc4>${[['product','产品'],['sales','销售'],['interact','互动'],['pace','节奏']].map(([k,l])=>html`<div>${l} <b>${sc[k]||0}</b>/5<i>${[1,2,3,4,5].map(t=>html`<u class="${Number(sc[k]||0)>=t?'on':''}"></u>`)}</i></div>`)}</div>`:''}</button>`};
+  return html`<div class="row wrap" style="margin-bottom:14px;gap:8px"><span class="pill acc">${rs.length} 轮</span><span class=pill>已单轮分析 ${Object.keys(done).length} 轮</span><span class=muted style="font-size:12.5px">点已分析的轮次看完整拆解</span></div>
+    ${rs.length?html`<div class=rounds>${rs.map(r=>card(r,done[r.idx]))}</div>`:html`<div class=card>${empty('这场还没做轮次切分','layers')}</div>`}
+    ${customs.length?html`<div class=sect><h2>人工指定时段</h2><span class=note>${customs.length} 段</span></div><div class=rounds>${customs.map((c,i)=>html`<button class="rcard rv" data-act=round data-i="${-(i+1)}"><div class=h><b>段</b><span>${(c._meta||{}).product||''}</span><em>${mmss((c._meta||{}).dur)}</em></div><p>${(c.score||{}).comment||''}</p></button>`)}</div>`:''}`}
+function sScript(s){
+  const d=(s.deep||{}).script||{},st=d.structure||{},cp=d.core_point||{};
+  return html`<div class="g g3" style="align-items:start">
+    <div class="card rv"><div class=card-h><h3>讲解结构</h3></div><div class=card-b>
+      <div class=lbl>开场</div><div style="font-size:13.5px;line-height:1.75">${st.opening||'—'}</div>
+      <div class=lbl>流程</div><div class=steps>${(st.flow||[]).map(x=>html`<div>${x}</div>`)}</div>
+      <div class=lbl>收口</div><div style="font-size:13px;line-height:1.7">${st.closing||'—'}</div>
+      <div class=lbl>循环完整度</div><div style="font-size:13px;line-height:1.7;color:var(--warn)">${st.cycle||'—'}</div>
+      <div class=lbl>核心卖点</div><div class=row style="justify-content:space-between"><b>${cp.what||'—'}</b><span class="pill acc">重复 ×${cp.repeat||0}</span></div>
+      ${cp.judge?html`<div class=muted style="font-size:12.5px;margin-top:4px">${cp.judge}</div>`:''}</div></div>
+    <div class="card rv" style="--i:1"><div class=card-h><h3>讲解逻辑链</h3><span class=note>${(d.logic_chains||[]).length} 条</span></div><div class=card-b>
+      ${(d.logic_chains||[]).length?d.logic_chains.map(c=>html`<div class=item><div class=h>${c.point}<span class="tag d-sales" style="margin:0">${c.method}</span><span class=ts>${mmss(c.t||0)}</span></div><div class=x>${c.how}</div>${c.quote?html`<div class=quote>${c.quote}</div>`:''}</div>`):empty('暂无','layers',1)}</div></div>
+    <div class="card rv" style="--i:2"><div class=card-h><h3>亮点与问题</h3></div><div class=card-b>
+      <div class=lbl style="color:var(--ok)">值得学的</div>${(d.highlights||[]).length?d.highlights.map(h=>html`<div class="item ok"><div class=h><span class=ts>${mmss(h.t||0)}</span><span style="font-weight:500;font-size:12.5px;color:var(--ok)">${h.why}</span></div><div class=quote>${h.quote}</div></div>`):empty('暂无','layers',1)}
+      <div class=lbl style="color:var(--warn)">要改的</div>${(d.issues||[]).length?d.issues.map(x=>html`<div class="item warn"><div class=h><span class=ts>${mmss(x.t||0)}</span>${x.problem}</div><div class=x>改法：${x.fix}</div></div>`):empty('暂无','layers',1)}</div></div></div>`}
+function sAudience(s){
+  const d=(s.deep||{}).audience||{},cs=d.concerns||[],mx=Math.max(1,...cs.map(c=>c.n||0));
+  return html`${d.summary?html`<div class="callout acc rv" style="margin-bottom:14px">${icon('msg')}<div>${d.summary}</div></div>`:''}
+    <div class="g g2" style="align-items:start">
+    <div class="card rv"><div class=card-h><h3>观众关注的产品细节</h3><span class=note>${cs.length} 类 · 条长 = 提及次数</span></div><div class=card-b>
+      ${cs.length?cs.map((c,i)=>html`<div style="padding:10px 0;border-bottom:1px dashed var(--line)">${meter(html`<b style="font-weight:600;color:var(--fg)">${c.topic}</b>`,(c.n||0)+' 条',(c.n||0)/mx,{color:c.answered?'var(--ok)':'var(--bad)',i,lw:150,vw:52})}
+        <div class=row style="gap:6px;flex-wrap:wrap"><span class="pill ${c.answered?'ok':'bad'}">${c.answered?'已回应':'未回应'}</span>${(c.samples||[]).slice(0,3).map(x=>html`<span class=muted style="font-size:12px">「${x}」</span>`)}</div></div>`):empty('暂无','msg',1)}</div></div>
+    <div class=g style="align-content:start">
+      <div class="card rv" style="--i:1"><div class=card-h><h3>没被回应的提问</h3><span class=note>${(d.unanswered||[]).length} 条</span></div><div class=card-b>
+        ${(d.unanswered||[]).length?d.unanswered.map(x=>html`<div class="item bad"><div class=h>${x.question}</div><div class=quote>${x.sample}</div></div>`):empty('都回应了','check',1)}</div></div>
+      <div class="card rv" style="--i:2"><div class=card-h><h3>顾虑与质疑</h3></div><div class=card-b>
+        ${(d.doubts||[]).length?d.doubts.map(x=>html`<div class="item warn"><div class=h>${x.doubt}</div><div class=quote>${x.sample}</div></div>`):empty('无','check',1)}
+        ${(d.positive||[]).length?html`<div class=lbl style="color:var(--ok)">正面反馈</div>${d.positive.map(x=>html`<div class="item ok"><div class=d>${x}</div></div>`)}`:''}</div></div></div></div>`}
+function sVisual(s){
+  const d=(s.deep||{}).visual||{},an=d.anchor||{};
+  const li=(arr,cls)=>arr&&arr.length?arr.map(x=>html`<div class="item ${cls||''}"><div class=d>${x}</div></div>`):empty('暂无','layers',1);
+  return html`<div class="g g3" style="align-items:start">
+    <div class="card rv"><div class=card-h><h3>场景与服化道</h3></div><div class=card-b>
+      <div style="font-size:13.5px;line-height:1.8">${d.scene||'—'}</div>
+      <div class=lbl>主播形象</div><div style="font-size:13px;line-height:1.7">${an.look||'—'}</div>
+      ${an.fit&&an.fit.verdict?html`<div class=lbl style="color:${an.fit.verdict==='一致'?'var(--ok)':an.fit.verdict==='不搭'?'var(--warn)':'inherit'}">造型适配（标准 3.1）：${an.fit.verdict}</div>
+        <div style="font-size:13px;line-height:1.7">${an.fit.reason||''}${an.changes?html`<br>${an.changes}`:''}</div>`:''}
+      <div class=lbl>主要动作</div><div style="font-size:13px;line-height:1.7">${an.action||'—'}</div></div></div>
+    <div class="card rv" style="--i:1"><div class=card-h><h3>道具与展示手法</h3><span class=note>${(d.props||[]).length} 件道具</span></div><div class=card-b>
+      ${(d.props||[]).map(x=>html`<div class=item><div class=h>${x.name}</div><div class=x>${x.usage}</div></div>`)}
+      <div class=lbl>商品展示手法</div>${(d.display||[]).map(x=>html`<div class="item ok"><div class=h>${x.method}</div><div class=x>${x.detail}</div></div>`)}</div></div>
+    <div class="card rv" style="--i:2"><div class=card-h><h3>可借鉴技巧</h3></div><div class=card-b>${li(d.techniques,'ok')}
+      ${(d.screen_elements||[]).length?html`<div class=lbl>画面信息元素</div>${li(d.screen_elements,'mute')}`:''}
+      ${(d.issues||[]).length?html`<div class=lbl style="color:var(--warn)">呈现问题</div>${li(d.issues,'warn')}`:''}</div></div></div>`}
+function sVMetrics(s){
+  const V=s.visual_metrics||{},D2=V.derived||{};
+  const props=(V.props||[]).map((x,i)=>meter(x.v,x.pct+'%',x.pct/100,{i,lw:118,color:'var(--c-s)'}));
+  return html`<div class="row wrap" style="margin-bottom:14px;gap:8px"><span class="pill acc">本场抽 ${V.n_frames} 帧逐帧标注</span><span class=pill>全场 ${(s.frame_secs||[]).length} 张截图中均匀抽样</span></div>
+    <div class="g g3" style="align-items:start">
+      <div class="card rv"><div class=card-h><h3>妆造与服装</h3></div><div class=card-b>${distBars(V.dist||{},V.examples,['makeup.level','makeup.hair','outfit.type','outfit.color','outfit.style'])}</div></div>
+      <div class="card rv" style="--i:1"><div class=card-h><h3>站位与镜头</h3></div><div class=card-b>${distBars(V.dist||{},V.examples,['staging.shot','staging.hpos','staging.product','staging.gaze','staging.ratio'])}</div></div>
+      <div class=g style="align-content:start"><div class="card rv" style="--i:2"><div class=card-h><h3>场景</h3></div><div class=card-b>${distBars(V.dist||{},V.examples,['scene.bg','scene.tone','scene.density','scene.light','scene.price_shown'])}</div></div>
+        <div class="card rv" style="--i:3"><div class=card-h><h3>道具使用率</h3></div><div class=card-b>${props.length?props:empty('暂无','layers',1)}</div></div></div></div>
+    ${Object.keys(D2).length?html`<div class=sect><h2>本场量化指标</h2></div><div class=dtiles>${Object.keys(D2).map((k,i)=>{const x=D2[k]||{};
+      const v=x.value!=null?x.value:(x.pct!=null?x.pct+'%':(x.main||'—'));
+      return html`<div class="dtile rv" style="--i:${i}"><div class=k>${k}</div><div class=d>${x.desc||VDESC[k]||''}</div><b>${v}</b></div>`})}</div>`:''}`}
+function sTMetrics(s){
+  const T=s.talk||{},g=T.groups||{},order=[['塑品','var(--c-p)'],['逼单','var(--c-s)'],['互动','var(--c-i)']],pg=T.push_gap;
+  return html`<div class="card rv"><div class=card-h><h3>话术结构</h3><span class=note>按时间轴切出三类话术，一段含多类时按时长均分</span></div><div class=card-b>
+      ${stack([...order.map(([k,c])=>({v:(g[k]||{}).pct||0,c,n:k})),{v:T.other?T.other.pct:0,c:'var(--c-o)',n:'其他'}],1)}
+      <div class="g g3" style="margin-top:16px">${order.map(([k,c],i)=>{const x=g[k]||{};
+        return html`<div class="kpi rv" style="--i:${i};border-top:3px solid ${c}"><i>${x.name||k}</i><b>${x.pct||0}<small>%</small></b>
+          <div class=s>${Math.round((x.sec||0)/60)} 分钟 · ${x.segments||0} 段 · ${x.per_min||0} 次/分</div>
+          <div class=s>单次均长 ${Math.round(x.avg_span_sec||0)} 秒 · 覆盖 ${x.coverage_decile||0}/10 段</div>
+          ${(x.top||[]).length?html`<div style="margin-top:6px">${x.top.slice(0,3).map(t=>html`<span class=tag>${t.name} ×${t.n}</span>`)}</div>`:''}</div>`})}</div></div></div>
+    ${pg?html`<div class="card rv" style="--i:2;margin-top:14px"><div class=card-h><h3>促单空窗</h3><span class=note>连续没提促单的最长时间</span></div><div class=card-b style="display:flex;gap:28px;align-items:center;flex-wrap:wrap">
+      ${ring(Math.round(pg.max_sec),Math.max(300,Math.round(pg.max_sec)),{size:120,color:pg.max_sec>120?'var(--warn)':'var(--ok)',sub:'秒 · 最长空窗'})}
+      <div style="flex:1;min-width:240px"><div style="font-size:14px">最长 <b>${Math.round(pg.max_sec)}</b> 秒，出现在 <span class=ts>${mmss(pg.max_at)}</span></div>
+        <div class=muted style="font-size:12.5px;margin-top:6px">超 60 秒的空窗 <b>${pg.over_60s}</b> 次${pg.over_60s?'（观众想买时没人推）':'（促单密度很好）'}</div>
+        ${(pg.worst||[]).slice(0,4).map(w=>html`<div class="item warn"><div class=d><span class=ts>${mmss(w.start)}</span>起，空窗 <b>${Math.round(w.sec)}</b> 秒</div></div>`)}</div></div></div>`:''}
+    <div class=muted style="font-size:12px;margin-top:12px">同品类标杆均值请到「话术量化」页对比 · <a href="${href('talk',{c:s.category||''})}" style="color:var(--acc)">去对比 →</a></div>`}
+
+VIEWS.s=async q=>{
+  const p=q.get('p');if(!p)return {redirect:['board',{}]};
+  const s=await API.session(p);
+  if(!s)return {title:'场次',html:page(html`<div class=card>${empty('找不到这一场','film')}</div>`)};
+  CUR=s;
+  const room=API.room(p),meta=API.meta(p)||{};
+  const name=s.name||(room&&room.name)||meta.name||'场次',cat=s.category||(room&&room.category)||'',grp=s.group||(room&&room.group)||meta.group;
+  const sibs=room?room.sessions.slice().sort((a,b)=>String(b.started).localeCompare(String(a.started))):[];
+  const dp=s.deep||{},m=s.metrics||{};
+  const has={overview:1,rounds:(s.rounds||[]).length,script:dp.script,audience:dp.audience,visual:dp.visual,
+    vmetrics:s.visual_metrics&&s.visual_metrics.n_frames,tmetrics:s.talk&&s.talk.groups};
+  const t=has[q.get('t')||'overview']?(q.get('t')||'overview'):'overview';
+  const fr=s.frame_secs||[],pg=gal(fr.map(x=>({src:API.frame(p,x),cap:name,sub:mmss(x)})));
+  const lastF=fr.length?fr[fr.length-1]:1e9;
+  const recording=s.done===false||(room&&room.recording&&sibs[0]&&sibs[0].path===p);
+  const k=(l,v,u)=>html`<div class="kpi sm rv"><i>${l}</i><b>${v}${u?html`<small>${u}</small>`:''}</b></div>`;
+  const body={overview:sOverview,rounds:sRounds,script:sScript,audience:sAudience,visual:sVisual,vmetrics:sVMetrics,tmetrics:sTMetrics}[t](s);
+  return {title:name,html:page(html`
+    <div class=shead>
+      <div class=poster data-act=lb data-g="${pg}" data-i="${Math.max(0,fr.length-1)}" title="翻看这场的全部截图">${img(API.frame(p,lastF))}</div>
+      <div style="min-width:0;flex:1">
+        <div class=row style="gap:8px"><a href="#/board" data-act=back class="btn ghost sm">${icon('left')}返回</a>${recording?html`<span class=livepill><span class=dot></span>录制中</span>`:''}</div>
+        <h1 style="margin-top:10px">${name}</h1>
+        <div class=meta>${grpPill(grp)}${cat?html`<span class=pill>${cat}</span>`:''}<span class=mono>${when(s.started||meta.started)}</span><span>·</span><span>${dur(s.elapsed)}</span>
+          ${s.analyzed===false?html`<span class="pill warn">未分析</span>`:''}</div>
+        ${sibs.length>1?html`<div class=sessbar>${sibs.map(x=>html`<a href="${href('s',{p:x.path,t:t==='overview'?'':t})}" class="${x.path===p?'on':''}">${when(x.started)} · ${durS(x.elapsed)}${x.analyzed?html` <span class=ok>✓</span>`:''}</a>`)}</div>`:''}
+      </div>
+      <div class=acts>
+        ${s.has_report?html`<a class="btn ghost" href="${API.report(p)}" target=_blank rel=noopener>${icon('file')}完整报告${icon('ext')}</a>`:''}
+        ${grp==='own'&&s.analyzed!==false?html`<a class="btn ghost" href="${href('target',{p})}">${icon('target')}靶向诊断</a>`:''}
+        ${s.analyzed!==false?html`<a class=btn href="${href('compare',grp==='own'?{a:p}:{b:p})}">${icon('versus')}拿去对标</a>`:''}
+      </div></div>
+    <div class="kpis k8">
+      ${k('时长',durS(s.elapsed))}${k('转写',num(s.transcript_chars||s.chars||0),'字')}${k('语速',m['语速_字每分']!=null?m['语速_字每分']:'—','字/分')}
+      ${k('弹幕',num(s.danmu||0))}${k('其中刷屏',s.spam_total||0,'条')}${k('行动指令',m['行动指令_次每分']!=null?m['行动指令_次每分']:'—','次/分')}
+      ${k('购买意向',m['购买意向弹幕']!=null?m['购买意向弹幕']:'—','条')}${k('最长无逼单',m['最长无逼单间隔_秒']!=null?Math.round(m['最长无逼单间隔_秒']):'—','秒')}</div>
+    <nav class=tabs>${STABS.map(([id,l])=>html`<a href="${href('s',{p,t:id==='overview'?'':id})}" class="${id===t?'on':''} ${has[id]?'':'off'}">${l}${has[id]?'':' ·无'}</a>`)}</nav>
+    ${body}`),
+    mount:root=>{if(t==='overview')tlMount(root,s)}}};
+
+ACT.retry=()=>{if(!API.base){location.reload();return}API._m.clear();API._c.clear();route()};
+(async function boot(){
+  applyTheme(Pref.get('theme','auto'));
+  if(Pref.get('mini',false))$('#shell').classList.add('mini');
+  $('.menu-btn').innerHTML=put(icon('menu'));
+  $('#searchbtn').innerHTML=put(html`${icon('search')}<span>搜索直播间、主播、页面…</span><kbd>${MODK}</kbd>`);
+  sideFoot();navRender('board');
+  try{await API.boot()}
+  catch(e){console.error(e);$('#main').innerHTML=put(errView(e).html);return}
+  statsRender();
+  await route();
+  API.docsIndex().catch(()=>{});   // 命令面板能直接搜到每份交付物
+  let stale=false;
+  const busy=()=>{const a=document.activeElement;
+    return !!(a&&a!==document.body&&a.closest&&a.closest('#main')&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))||
+      !!$('.cover.scrubbing')||$('#shell').classList.contains('open')};
+  if(!STATIC)setInterval(async()=>{
+    if(document.hidden||OV.stack.length)return;
+    try{const ch=await API.poll();statsRender();stale=stale||ch;
+      if(stale&&R.view==='board'&&!busy()){stale=false;R.quiet=true;route()}}catch(e){}},5000);
+})();
+</script>
+</body>
+</html>
