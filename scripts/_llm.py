@@ -72,7 +72,6 @@ def conf():
     都不填 = 阿里云百炼（DASHSCOPE_API_KEY、qwen-max、qwen-vl-max）。
     填了 LLM_BASE_URL 而 LLM_VL_MODEL 留空（或写 none）= 这家没有视觉模型，视觉量化和画面分析跳过。
     原来四个脚本各自写死地址和模型名，账号一欠费，想换家服务要改四处。
-    换模型后先跑 scripts/bias_check.py：讨好偏差是按模型测的，换了要重测。
     """
     load_env()
     custom = bool(os.environ.get("LLM_BASE_URL"))
