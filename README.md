@@ -6,6 +6,8 @@
 
 简体中文 · [English](README.en.md) · 社区版 v1
 
+![License](https://img.shields.io/github/license/chrislitality-svg/livestream-coach-oss) ![Python](https://img.shields.io/github/languages/top/chrislitality-svg/livestream-coach-oss) ![Last Commit](https://img.shields.io/github/last-commit/chrislitality-svg/livestream-coach-oss)
+
 </div>
 
 ![总览](docs/images/board.png)
